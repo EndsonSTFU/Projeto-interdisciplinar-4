@@ -1,42 +1,26 @@
 import sqlite3
-import os
 
-db_path = 'banco_de_dados.db'
+def get_db_connection():
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
+def insert_paciente(nome, email, senha, data_nascimento, cpf, matricula):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO pacientes (nome, email, senha, data_nascimento, cpf, matricula)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (nome, email, senha, data_nascimento, cpf, matricula))
+    conn.commit()
+    conn.close()
 
-if os.path.exists(db_path):
-    os.remove(db_path)
-
-
-banco = sqlite3.connect(db_path)
-
-cursor = banco.cursor()
-
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS pacientes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        senha TEXT NOT NULL,
-        data_nascimento TEXT NOT NULL,
-        cpf TEXT NOT NULL UNIQUE,
-        matricula INTEGER NOT NULL UNIQUE
-    )
-""")
-
-
-cursor.execute("""
-    INSERT INTO pacientes (nome, email, senha, data_nascimento, cpf, matricula)
-    VALUES ('Creuza', 'Creuza_123@gmail.com', 'senha123', '1984-07-23', '12345678900', 123456)
-""")
-
-
-banco.commit()
-
-
-cursor.execute("SELECT * FROM pacientes")
-for row in cursor.fetchall():
-    print(row)
-
-
-banco.close()
+def check_login(email, senha):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM pacientes WHERE email = ? AND senha = ?
+    """, (email, senha))
+    user = cursor.fetchone()
+    conn.close()
+    return user
