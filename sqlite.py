@@ -5,13 +5,13 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-def insert_paciente(nome, email, senha, data_nascimento, cpf, matricula):
+def insert_paciente(nome, email, senha, data_nascimento, matricula):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO pacientes (nome, email, senha, data_nascimento, cpf, matricula)
+        INSERT INTO pacientes (nome, email, senha, data_nascimento, matricula)
         VALUES (?, ?, ?, ?, ?, ?)
-    """, (nome, email, senha, data_nascimento, cpf, matricula))
+    """, (nome, email, senha, data_nascimento, matricula))
     conn.commit()
     conn.close()
 
