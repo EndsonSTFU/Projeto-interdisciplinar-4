@@ -37,8 +37,8 @@ def login_psicologo():
             return render_template('login_psicologo')
         user = sqlite.check_login(email, senha)
         if user:
-            session['user_id'] = user['user']
-            return redirect(url_for('telapsicologo.html'))
+            session['user_id'] == user['user']
+            return redirect(url_for('telapsicologo'))
         else:
             flash('Email ou senha inválidos', 'danger')          
             
