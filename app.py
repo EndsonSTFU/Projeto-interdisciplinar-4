@@ -29,17 +29,30 @@ def login():
 
 @app.route('/login_psicologo')
 def login_psicologo():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        if not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('login_psicologo')
+        user = sqlite.check_login(email, senha)
+        if user:
+            session['user_id'] = user['user']
+            return redirect(url_for('telapsicologo.html'))
+        else:
+            flash('Email ou senha inválidos', 'danger')          
+            
     return render_template('login_psicologo.html')
 
 #testando
-@app.route('/telapsicologo', methods=['GET', 'POST'])
+"""@app.route('/telapsicologo', methods=['GET', 'POST'])
 def telapsicologo_login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
         
         if not email or not senha:
-            flash('Todos os campos são obrigatórios.', 'danger')
+            flash('Todos os campos são obrigatórios.', 'danger')    
             return render_template('login.html')
 
         user = sqlite.check_login(email, senha)
@@ -49,7 +62,7 @@ def telapsicologo_login():
         else:
             flash('Email ou senha inválidos', 'danger')
 
-    return render_template('telapsicologo.html')
+    return render_template('telapsicologo.html')"""
 #testando
 @app.route('/telapaciente')
 def telapaciente():
