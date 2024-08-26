@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Psicólogo</title>
+    <title>Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,7 +67,7 @@
             box-sizing: border-box;
         }
 
-        button {
+        .botao {
             width: 100%;
             padding: 10px;
             background-color: #333;
@@ -79,20 +79,39 @@
             margin-bottom: 10px;
         }
 
-        button:hover {
+        .botao:hover {
             background-color: #555;
         }
 
-        .signup-button {
-            background-color: #145296;
-            margin-bottom: 0;
+        .cadastro-container {
+            margin-top: 15px;
         }
 
-        .signup-button:hover {
+        .cadastro-botao {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .cadastro-botao:hover {
             background-color: #0056b3;
         }
 
-        .error {
+        .psicologo-botao {
+            background-color: #4caf50;
+        }
+
+        .psicologo-botao:hover {
+            background-color: #45a049;
+        }
+
+        .erro {
             color: #f44336;
             margin-top: 10px;
         }
@@ -114,9 +133,12 @@
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" required>
                 </div>
-                <button type="submit">Entrar</button>
-                <a href="/cadastro" class="signup-button">Cadastre-se</a>
-                <div class="error" id="error-message"></div>
+                <button type="submit" class="botao">Entrar</button>
+                <div class="cadastro-container">
+                    <a href="/cadastro" class="cadastro-botao">Cadastre-se</a>
+                    <a href="/login_psicologo" class="cadastro-botao psicologo-botao">Página do Colaborador</a>
+                </div>
+                <div class="erro" id="error-message"></div>
             </form>
         </div>
     </div>

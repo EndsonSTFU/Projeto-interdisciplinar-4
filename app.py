@@ -26,9 +26,14 @@ def login():
             flash('Email ou senha inválidos', 'danger')
 
     return render_template('login.html')
+
+@app.route('/login_psicologo')
+def login_psicologo():
+    return render_template('login_psicologo.html')
+
 #testando
 @app.route('/telapsicologo', methods=['GET', 'POST'])
-def login():
+def telapsicologo_login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
