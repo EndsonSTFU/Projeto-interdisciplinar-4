@@ -6,4 +6,4 @@ def get_db_connection():
     return conn
 
 def limpa():
-    conn = 
+    return
