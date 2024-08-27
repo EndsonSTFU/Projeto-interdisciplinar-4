@@ -94,5 +94,22 @@ def cadastro():
 
     return render_template('cadastro.html')
 
+@app.route('/anotacao_paciente', methods=['GET', 'POST'])
+def anotacao_paciente():
+    # Sobre esta função: É só uma base para pode registrar as anotações
+    # Vai ser necessário adaptar de acordo com a página que será criada
+    if request.method == 'POST':
+        nome_paciente = request.form.get('nome_paciente')
+        anotacao_paciente = request.form.get('anotacao_paciente')
+
+        if not nome_paciente or not anotacao_paciente:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('anotacao_paciente.html')
+
+        sqlite.insert_anotacao(nome_paciente, anotacao_paciente)
+        return redirect(url_for('home'))
+
+    return render_template('anotacao_paciente.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
