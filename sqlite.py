@@ -39,4 +39,15 @@ def insert_psicologo(nome, email, senha):
                    VALUES (waldemar, waldemar.neto@ufrpe.br, 123456789)""",(nome, email, senha))
     conn.commit()
     conn.close()
-    
+
+def insert_anotacao(nome_paciente, anotacao):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    '''
+    cursor.execute("""
+                   INSERT INTO psicicólogo
+
+                   !!! É preciso adaptar isso para tabela de psicólogo depois !!!
+    '''
+    conn.commit()
+    conn.close()
