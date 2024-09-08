@@ -5,10 +5,8 @@ def get_db_connection():
     try:
         conn = sqlite3.connect('banco_de_dados.db')  
         conn.row_factory = sqlite3.Row
-        
         return conn
     except sqlite3.Error as e:
-        
         return None
 
 def criacao_tabela_paciente():
@@ -26,7 +24,6 @@ def criacao_tabela_paciente():
             Data_Nascimento DATE,
             Matricula INTEGER NOT NULL)''')
         conn.commit()
-        
     except sqlite3.Error as e:
         print(f"Erro ao criar a tabela 'pacientes': {e}")
     finally:
@@ -67,13 +64,41 @@ def criacao_tabela_psicologo():
     finally:
         conn.close()
 
-# Chamando as funções para verificar se as tabelas estão sendo criadas
+def insert_paciente(nome, email, senha, data_nascimento, matricula):
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO pacientes (Nome, Email, Senha, Data_Nascimento, Matricula) 
+            VALUES (?, ?, ?, ?, ?)''', (nome, email, senha, data_nascimento, matricula))
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Erro ao inserir paciente: {e}")
+    finally:
+        conn.close()
+
+def check_login(email, senha):
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    try:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM pacientes WHERE Email = ? AND Senha = ?', (email, senha))
+        user = cursor.fetchone()
+        return user
+    except sqlite3.Error as e:
+        print(f"Erro ao verificar login: {e}")
+        return None
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     criacao_tabela_paciente()
     criacao_tabela_anotacoes()
     criacao_tabela_psicologo()
 
-    # Verifica se o arquivo foi criado no diretório atual
     if os.path.exists('banco_de_dados.db'):
         print("Banco de dados criado com sucesso!")
     else:
