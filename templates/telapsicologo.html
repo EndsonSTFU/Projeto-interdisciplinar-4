@@ -86,10 +86,12 @@
         <div class="dashboard-container">
             <h1>Área do Psicólogo</h1>
             <div class="button-group">
-                <button onclick="location.href='solicitacoes_consulta.html'">Verificar Solicitações de Consultas</button>
-                <button onclick="location.href='horarios_marcados.html'">Horários Marcados</button>
-                <button onclick="location.href='desmarcar_consulta.html'">Desmarcar Consulta</button>
-                <button onclick="location.href='sair.html'">Sair</button>
+                <a href="{{ url_for('cadastrarhorario') }}">Cadastrar Horários para Atendimentos</a>
+                <button onclick="location.href='horarios_marcados.html'">Verificar Solicitações de Consultas</button>
+                <button onclick="location.href='desmarcar_consulta.html'">Fazer Anotações de Pacientes</button>
+                <form action="/logout" method="post">
+                    <button type="submit">Sair</button>
+                </form>
             </div>
         </div>
     </div>

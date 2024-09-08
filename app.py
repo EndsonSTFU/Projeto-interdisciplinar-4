@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite
 
 app = Flask(__name__)
@@ -52,6 +52,12 @@ def telapaciente():
         return redirect(url_for('login'))
     return render_template('telapaciente.html')
 
+@app.route('/agendar_consulta')
+def agendar_consulta():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('agendar_consulta.html')
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
@@ -90,6 +96,38 @@ def anotacao_paciente():
         return redirect(url_for('home'))
 
     return render_template('anotacao_paciente.html')
+
+@app.route('/cadastrarhorario')
+def cadastrarhorario():
+    if 'user_id' not in session:
+        return redirect(url_for('login_psicologo'))
+    return render_template('cadastrarhorario.html')
+
+@app.route('/get_events')
+def get_events():
+    conn = sqlite.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM horarios')
+    events = cursor.fetchall()
+    conn.close()
+    return jsonify([{
+        'title': event['title'],
+        'start': event['start'],
+        'end': event['end']
+    } for event in events])
+
+@app.route('/add_event', methods=['POST'])
+def add_event():
+    data = request.get_json()
+    title = data['title']
+    start = data['start']
+    end = data['end']
+    conn = sqlite.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO horarios (title, start, end) VALUES (?, ?, ?)', (title, start, end))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -64,6 +64,25 @@ def criacao_tabela_psicologo():
     finally:
         conn.close()
 
+def criacao_tabela_horarios():
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS horarios (
+            ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            start TEXT NOT NULL,
+            end TEXT NOT NULL)''')
+        conn.commit()
+        print("Tabela 'horarios' criada com sucesso.")
+    except sqlite3.Error as e:
+        print(f"Erro ao criar a tabela 'horarios': {e}")
+    finally:
+        conn.close()
+
 def insert_paciente(nome, email, senha, data_nascimento, matricula):
     conn = get_db_connection()
     if conn is None:
@@ -94,12 +113,29 @@ def check_login(email, senha):
     finally:
         conn.close()
 
+def insert_event(title, start, end):
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO horarios (title, start, end) 
+            VALUES (?, ?, ?)''', (title, start, end))
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Erro ao inserir evento: {e}")
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     criacao_tabela_paciente()
     criacao_tabela_anotacoes()
     criacao_tabela_psicologo()
+    criacao_tabela_horarios()
 
     if os.path.exists('banco_de_dados.db'):
-        print("Banco de dados criado com sucesso!")
+        print("Banco de dados e tabelas criados com sucesso!")
     else:
         print("Banco de dados não foi criado.")
+
