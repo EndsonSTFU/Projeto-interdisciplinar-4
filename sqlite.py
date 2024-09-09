@@ -127,6 +127,14 @@ def check_login(email, senha):
     finally:
         conn.close()
 
+def check_login_psicologo(email, senha):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM psicologo WHERE email = ? AND senha = ?', (email, senha))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
 def insert_event(title, start, end):
     conn = get_db_connection()
     if conn is None:

@@ -35,9 +35,9 @@ def login_psicologo():
 
         if not email or not senha:
             flash('Todos os campos são obrigatórios.', 'danger')
-            return render_template('login_psicologo')
+            return render_template('login_psicologo.html')
 
-        user = sqlite.check_login(email, senha)
+        user = sqlite.check_login_psicologo (email, senha)
         if user:
             session['user_id'] = user['ID_psicologo']
             return redirect(url_for('telapsicologo'))
@@ -45,6 +45,12 @@ def login_psicologo():
             flash('Email ou senha inválidos', 'danger')
 
     return render_template('login_psicologo.html')
+
+@app.route('/telapsicologo')
+def telapsicologo():
+    if 'user_id' not in session:
+        return redirect(url_for('login_psicologo'))
+    return render_template('telapsicologo.html')
 
 @app.route('/telapaciente')
 def telapaciente():
