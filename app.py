@@ -92,7 +92,7 @@ def cadastro_psicologo():
             return render_template('cadastro.html')
         sqlite.insert_psicologo(email, senha)
         flash('Cadastro realizado com sucesso!', 'success')
-        return redirect(url_for('telapsicologo'))
+        return redirect(url_for('login_psicologo'))
     return render_template('cadastro_psicologo.html')
 
 

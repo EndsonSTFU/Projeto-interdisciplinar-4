@@ -105,7 +105,7 @@ def insert_psicologo(email,senha):
     try:
         cursor = conn.cursor()
         cursor.execute('''INSERT INTO psicologo (email, senha)
-                       VALUER(?,?)''', (email, senha))
+                       VALUES(?,?)''', (email, senha))
         conn.commit()
     except sqlite3.Error as e:
         print(f"Erro ao inserir paciente: {e}")
