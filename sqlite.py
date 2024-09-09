@@ -98,6 +98,20 @@ def insert_paciente(nome, email, senha, data_nascimento, matricula):
     finally:
         conn.close()
 
+def insert_psicologo(email,senha):
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''INSERT INTO psicologo (email, senha)
+                       VALUER(?,?)''', (email, senha))
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Erro ao inserir paciente: {e}")
+    finally:
+        conn.close()
+
 def check_login(email, senha):
     conn = get_db_connection()
     if conn is None:

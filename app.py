@@ -82,6 +82,20 @@ def cadastro():
 
     return render_template('cadastro.html')
 
+@app.route('/cadastro_psicologo', methods=['GET', 'POST'])
+def cadastro_psicologo():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        if not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('cadastro.html')
+        sqlite.insert_psicologo(email, senha)
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect(url_for('telapsicologo'))
+    return render_template('cadastro_psicologo.html')
+
+
 @app.route('/anotacao_paciente', methods=['GET', 'POST'])
 def anotacao_paciente():
     if request.method == 'POST':
