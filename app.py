@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import sqlite
+from datetime import datetime
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'atendimento_psicologico_personalizado'
@@ -18,7 +19,7 @@ def login():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('login.html')
 
-        user = sqlite.check_login(email, senha)
+        user = check_login(email, senha)
         if user:
             session['user_id'] = user['ID_pacientes']
             return redirect(url_for('telapaciente'))
@@ -37,7 +38,7 @@ def login_psicologo():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('login_psicologo.html')
 
-        user = sqlite.check_login_psicologo (email, senha)
+        user = check_login_psicologo(email, senha)
         if user:
             session['user_id'] = user['ID_psicologo']
             return redirect(url_for('telapsicologo'))
@@ -62,7 +63,15 @@ def telapaciente():
 def agendar_consulta():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('agendar_consulta.html')
+
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT title, start, end FROM horarios')
+    horarios = cursor.fetchall()
+    conn.close()
+
+    return render_template('agendar_consulta.html', horarios=horarios)
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -82,7 +91,7 @@ def cadastro():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('cadastro.html')
 
-        sqlite.insert_paciente(nome, email, senha, data_nascimento, matricula)
+        insert_paciente(nome, email, senha, data_nascimento, matricula) 
         flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('home'))
 
@@ -95,12 +104,11 @@ def cadastro_psicologo():
         senha = request.form.get('senha')
         if not email or not senha:
             flash('Todos os campos são obrigatórios.', 'danger')
-            return render_template('cadastro.html')
-        sqlite.insert_psicologo(email, senha)
+            return render_template('cadastro_psicologo.html')
+        insert_psicologo(email, senha) 
         flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('login_psicologo'))
     return render_template('cadastro_psicologo.html')
-
 
 @app.route('/anotacao_paciente', methods=['GET', 'POST'])
 def anotacao_paciente():
@@ -112,7 +120,7 @@ def anotacao_paciente():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('anotacao_paciente.html')
 
-        sqlite.insert_anotacao(nome_paciente, anotacao_paciente)
+        insert_anotacao(nome_paciente, anotacao_paciente)
         return redirect(url_for('home'))
 
     return render_template('anotacao_paciente.html')
@@ -125,29 +133,80 @@ def cadastrarhorario():
 
 @app.route('/get_events')
 def get_events():
-    conn = sqlite.get_db_connection()
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM horarios')
+    cursor.execute('SELECT title, start, end FROM horarios')
     events = cursor.fetchall()
     conn.close()
-    return jsonify([{
-        'title': event['title'],
-        'start': event['start'],
-        'end': event['end']
-    } for event in events])
+
+    formatted_events = []
+    for event in events:
+        formatted_event = {
+            'title': event['title'],
+            'start': datetime.fromisoformat(event['start']).isoformat(),
+            'end': datetime.fromisoformat(event['end']).isoformat()
+        }
+        formatted_events.append(formatted_event)
+
+    return jsonify(formatted_events)
 
 @app.route('/add_event', methods=['POST'])
 def add_event():
     data = request.get_json()
     title = data['title']
-    start = data['start']
-    end = data['end']
-    conn = sqlite.get_db_connection()
+    start = datetime.fromisoformat(data['start']).isoformat()
+    end = datetime.fromisoformat(data['end']).isoformat()
+    conn = sqlite3.connect('banco_de_dados.db')
     cursor = conn.cursor()
     cursor.execute('INSERT INTO horarios (title, start, end) VALUES (?, ?, ?)', (title, start, end))
     conn.commit()
     conn.close()
     return jsonify({'status': 'success'})
+
+def check_login(email, senha):
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM pacientes WHERE Email = ? AND Senha = ?', (email, senha))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+def check_login_psicologo(email, senha):
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM psicologo WHERE email = ? AND senha = ?', (email, senha))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+def insert_paciente(nome, email, senha, data_nascimento, matricula):
+    conn = sqlite3.connect('banco_de_dados.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO pacientes (Nome, Email, Senha, Data_Nascimento, Matricula) 
+        VALUES (?, ?, ?, ?, ?)''', (nome, email, senha, data_nascimento, matricula))
+    conn.commit()
+    conn.close()
+
+def insert_psicologo(email, senha):
+    conn = sqlite3.connect('banco_de_dados.db')
+    cursor = conn.cursor()
+    cursor.execute('''INSERT INTO psicologo (email, senha)
+                   VALUES (?, ?)''', (email, senha))
+    conn.commit()
+    conn.close()
+
+def insert_anotacao(nome_paciente, anotacao_paciente):
+    conn = sqlite3.connect('banco_de_dados.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO anotacoes (Anotacoes) 
+        VALUES (?)''', (anotacao_paciente,))
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)

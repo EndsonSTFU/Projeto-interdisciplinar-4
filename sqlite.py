@@ -160,4 +160,3 @@ if __name__ == "__main__":
         print("Banco de dados e tabelas criados com sucesso!")
     else:
         print("Banco de dados não foi criado.")
-

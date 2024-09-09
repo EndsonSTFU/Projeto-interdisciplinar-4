@@ -77,6 +77,43 @@
         .back-button:hover {
             background-color: #555;
         }
+      
+        #eventModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        #modalContent {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
@@ -87,6 +124,15 @@
     <div class="container">
         <h1>CADASTRAR HORÁRIOS</h1>
         <div id='calendar'></div>
+    </div>
+    <div id="eventModal">
+        <div id="modalContent">
+            <span class="close">&times;</span>
+            <h2>Horários Disponíveis</h2>
+            <p><strong>Título:</strong> <span id="modalTitle"></span></p>
+            <p><strong>Início:</strong> <span id="modalStart"></span></p>
+            <p><strong>Fim:</strong> <span id="modalEnd"></span></p>
+        </div>
     </div>
 
     <script>
@@ -99,29 +145,72 @@
                 editable: true,
                 events: '/get_events',
                 select: function(info) {
-                    var title = prompt('Horário de atendimento:');
-                    if (title) {
-                        fetch('/add_event', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                title: title,
-                                start: info.startStr,
-                                end: info.endStr
-                            })
-                        }).then(response => response.json()).then(data => {
-                            calendar.addEvent({
-                                title: title,
-                                start: info.start,
-                                end: info.end
+                    var formHtml = `
+                        <div id="eventFormContainer">
+                            <form id="eventForm">
+                                <label for="title">Título:</label>
+                                <input type="text" id="title" name="title" required><br>
+                                <label for="start">Início:</label>
+                                <input type="datetime-local" id="start" name="start" required><br>
+                                <label for="end">Fim:</label>
+                                <input type="datetime-local" id="end" name="end" required><br>
+                                <input type="submit" value="Salvar">
+                            </form>
+                        </div>
+                    `;
+                    var formContainer = document.createElement('div');
+                    formContainer.innerHTML = formHtml;
+                    document.body.appendChild(formContainer);
+
+                    document.getElementById('eventForm').addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        var title = document.getElementById('title').value;
+                        var start = document.getElementById('start').value;
+                        var end = document.getElementById('end').value;
+                        
+                        if (title && start && end) {
+                            fetch('/add_event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    title: title,
+                                    start: start,
+                                    end: end
+                                })
+                            }).then(response => response.json()).then(data => {
+                                calendar.addEvent({
+                                    title: title,
+                                    start: start,
+                                    end: end
+                                });
+                                document.body.removeChild(formContainer);
                             });
-                        });
-                    }
+                        }
+                    });
+                },
+                eventClick: function(info) {
+                    var start = new Date(info.event.start);
+                    var end = new Date(info.event.end);
+                    
+                    document.getElementById('modalTitle').textContent = info.event.title;
+                    document.getElementById('modalStart').textContent = start.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+                    document.getElementById('modalEnd').textContent = end ? end.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'Não definido';
+                    document.getElementById('eventModal').style.display = "block";
                 }
             });
             calendar.render();
+            var modal = document.getElementById('eventModal');
+            var span = document.getElementsByClassName('close')[0];
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
         });
     </script>
 </body>
