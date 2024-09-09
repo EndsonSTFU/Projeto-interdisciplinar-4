@@ -95,10 +95,20 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .voltar-botao {
+            width: 100%;
+            padding: 10px;
+            background-color: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 16px;
             margin-bottom: 10px;
         }
-
         .cadastro-botao:hover {
             background-color: #0056b3;
         }
@@ -126,9 +136,9 @@
                     <input type="password" id="senha" name="senha" required>
                 </div>
                 <button type="submit">Entrar</button>
-                <a href="/login" class="button">Voltar</a>
                 <div class="cadastro-container">
                     <a href="/cadastro_psicologo" class="cadastro-botao">Cadastre-se</a> 
+                    <a href="/login" class="voltar-botao">Voltar</a>
                 </div>
                 <div class="error" id="error-message"></div>
             </form>
