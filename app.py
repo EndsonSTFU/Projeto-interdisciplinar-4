@@ -1,9 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
+<<<<<<< HEAD
 import sqlite
 import sqlite3
 
 
+=======
+import sqlite3
+
+>>>>>>> 7a963580531f4730819175fb12116f251e786879
 app = Flask(__name__)
 app.secret_key = 'atendimento_psicologico_personalizado'
 
