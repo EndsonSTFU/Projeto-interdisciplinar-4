@@ -128,38 +128,22 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .logo {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            max-width: 70%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="logo">
+            <img src="../static/imagens/thumbnailsite (1).png" alt="Logo">
+        </div>
         <h1>Anotações dos Pacientes</h1>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <p class="flash-message {{ category }}">{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
-
-        <form action="/salvar_anotacao" method="post">
-            <div class="form-group">
-                <label for="paciente">Paciente:</label>
-                <select id="paciente" name="paciente" required>
-                    {% for paciente in pacientes %}
-                        <option value="{{ paciente.ID }}">{{ paciente.nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="anotacao">Anotação:</label>
-                <textarea id="anotacao" name="anotacao" required></textarea>
-            </div>
-            <button type="submit" class="button">Salvar Anotação</button>
-        </form>
-
         <h2>Pacientes</h2>
         <table>
             <thead>
