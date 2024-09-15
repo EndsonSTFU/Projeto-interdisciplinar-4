@@ -1,14 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
-<<<<<<< HEAD
 import sqlite
 import sqlite3
 
-
-=======
-import sqlite3
-
->>>>>>> 7a963580531f4730819175fb12116f251e786879
 app = Flask(__name__)
 app.secret_key = 'atendimento_psicologico_personalizado'
 
@@ -182,6 +176,20 @@ def cadastro():
         return redirect(url_for('home'))
 
     return render_template('cadastro.html')
+
+@app.route('/verificar_senha_psicologo', methods=['GET', 'POST'])
+def verificar_senha_psicologo():
+    if request.method == 'POST':
+        senha_acesso = request.form.get('senha_acesso')
+        
+        senha_acesso_correta = "atendiNAPS2024!"
+        
+        if senha_acesso == senha_acesso_correta:
+            return redirect(url_for('cadastro_psicologo'))
+        else:
+            flash('Senha de acesso incorreta.', 'danger')
+    
+    return render_template('verificar_senha_psicologo.html')
 
 @app.route('/cadastro_psicologo', methods=['GET', 'POST'])
 def cadastro_psicologo():

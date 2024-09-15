@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Senha de Acesso</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafca1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffeb3b;
+            padding: 50px;
+            border-radius: 10px;
+            border: 4px solid #000;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            color: #333;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Insira a Senha de Acesso</h1>
+        <p>Por favor, confirme que você é um colaborador do NAPS</p>
+        <form method="post">
+            <input type="password" name="senha_acesso" placeholder="Senha de Acesso" required>
+            <button type="submit">Verificar</button>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

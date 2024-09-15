@@ -83,29 +83,21 @@
             background-color: #555;
         }
 
-        .button{
-            width: 95%;
+        .cadastro-container {
+            margin-top: 15px;
+        }
+
+        .cadastro-botao {
+            width: 100%;
             padding: 10px;
             background-color: #333;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .button:hover {
-            background-color: #555;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px; 
-            margin-top: 20px; 
-            font-size: 20px;
+            font-size: 15px;
             margin-bottom: 15px;
+            text-decoration: none;
         }
         .voltar-botao {
             width: 100%;
@@ -117,6 +109,7 @@
             cursor: pointer;
             font-size: 16px;
             margin-bottom: 10px;
+            text-decoration: none;
         }
         .cadastro-botao:hover {
             background-color: #0056b3;
@@ -126,22 +119,6 @@
             color: #f44336;
             margin-top: 10px;
         }
-
-        .flash-message {
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-            width: 90%;
-            margin-bottom: 10px;
-        }
-
-        .flash-message.danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
     </style>
 </head>
 <body>
@@ -150,21 +127,7 @@
             <img src="../static/imagens/thumbnailsite (1).png" alt="Logo">
         </div>
         <div class="login-container">
-            
             <h1>Login do Psicólogo</h1>
-
-            <div class="flash-messages hidden">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="flash-messages">
-                        {% for category, message in messages %}
-                            <p class="flash-message {{ category }}">{{ message }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                {% endwith %}
-            </div>
-            
             <form action="/login_psicologo" method="post">
                 <div class="form-group">
                     <label for="email">E-mail:</label>
@@ -174,9 +137,10 @@
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" required>
                 </div>
-                <div class="buttons">
-                    <button type="submit">Entrar</button>
-                    <a href="/login" class="button">Voltar</a>
+                <button type="submit">Entrar</button>
+                <div class="cadastro-container">
+                    <a href="/verificar_senha_psicologo" class="cadastro-botao">Cadastre-se</a>
+                    <a href="/login" class="voltar-botao">Voltar</a>
                 </div>
                 <div class="error" id="error-message"></div>
             </form>
