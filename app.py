@@ -60,45 +60,19 @@ def telapsicologo():
         return redirect(url_for('login_psicologo'))
     return render_template('telapsicologo.html')
 
-
-@app.route('/dashboard', methods=['GET', 'POST'])
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
-
-    user_id = session['user_id']
-    
-    user = sqlite.get_psicologo_by_id(user_id)
-    if user is None:
-        flash('Usuário não encontrado.', 'danger')
-        return redirect(url_for('login_psicologo'))
-    
-    horarios = sqlite.get_all_horarios()
-
-    return render_template('dashboard.html', email=user['email'], senha=user['senha'], horarios=horarios)
-
-@app.route('/agendar_consulta', methods=['GET', 'POST'])
+@app.route('/agendar_consulta')
 def agendar_consulta():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
-    if request.method == 'POST':
-        title = request.form.get('title')
-        start = request.form.get('start')
 
-        if not title or not start:
-            flash('Todos os campos são obrigatórios.', 'danger')
-            return render_template('agendar_consulta.html')
-        
-        try:
-            sqlite.insert_horario(title, start)
-            flash('Consulta agendada com sucesso!', 'success')
-            return redirect(url_for('agendar_consulta'))
-        except Exception as e:
-            flash(f'Ocorreu um erro: {e}', 'danger')
-            return render_template('agendar_consulta.html')
-    
-    return render_template('agendar_consulta.html')
+    conn = sqlite3.connect('banco_de_dados.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT title, start, end FROM horarios')
+    horarios = cursor.fetchall()
+    conn.close()
+
+    return render_template('agendar_consulta.html', horarios=horarios)
 
 @app.route('/anotacoes_pacientes', methods=['GET', 'POST'])
 def anotacoes_pacientes():
@@ -146,12 +120,11 @@ def detalhes_paciente(id):
 
     if not paciente:
         flash('Paciente não encontrado.', 'danger')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('telapsicologo'))
 
     anotacoes = sqlite.get_paciente_anotacoes(id)
     anotacoes = anotacoes['anotacoes']
     return render_template('detalhes_paciente.html', paciente=paciente, anotacoes=anotacoes, id=id)
-
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
