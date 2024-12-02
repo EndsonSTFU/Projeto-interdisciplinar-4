@@ -78,7 +78,6 @@
             background-color: #555;
         }
 
-        /* Melhorando o visual da caixa de cadastro de horários */
         #eventFormContainer {
             position: fixed;
             top: 50%;
@@ -132,7 +131,6 @@
             flex-direction: column;
         }
 
-        /* Botão de fechar "X" */
         #eventFormContainer .close-btn {
             position: absolute;
             top: 10px;
@@ -145,7 +143,7 @@
             background: none;
         }
 
-        /* Estilos do modal */
+
         #eventModal {
             display: none;
             position: fixed;
@@ -213,7 +211,7 @@
                 editable: true,
                 events: '/get_events',
                 select: function(info) {
-                    // Corrigindo o bug do formulário se repetir infinitamente ao clicar em diversas datas
+
                     var existingForm = document.getElementById('eventFormContainer');
                     if (existingForm) {
                         document.body.removeChild(existingForm);
@@ -237,7 +235,7 @@
                     formContainer.innerHTML = formHtml;
                     document.body.appendChild(formContainer);
 
-                    // Fechar o formulário clicando no "X"
+
                     document.querySelector('.close-btn').addEventListener('click', function() {
                         document.body.removeChild(formContainer);
                     });
@@ -282,12 +280,12 @@
             });
             calendar.render();
 
-            // Fechar a janelinha ao clicar no X
+
             document.querySelector('.close').onclick = function() {
                 document.getElementById('eventModal').style.display = "none";
             };
 
-            // Fechar a janelinha ao clicar "fora da página"
+
             window.onclick = function(event) {
                 if (event.target == document.getElementById('eventModal')) {
                     document.getElementById('eventModal').style.display = "none";

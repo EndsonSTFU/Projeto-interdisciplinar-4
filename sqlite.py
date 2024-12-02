@@ -87,6 +87,25 @@ def criacao_tabela_horarios():
     finally:
         conn.close()
 
+def criacao_tabela_pedagogo():
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS pedagogo (
+            ID_pedagogo INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            email VARCHAR NOT NULL,
+            senha VARCHAR NOT NULL)''')
+        conn.commit()
+        print("Tabela 'pedagogo' criada com sucesso.")
+    except sqlite3.Error as e:
+        print(f"Erro ao criar a tabela 'pedagogo': {e}")
+    finally:
+        conn.close()
+
+
 def insert_paciente(nome, email, senha, data_nascimento, matricula):
     conn = get_db_connection()
     if conn is None:
@@ -132,6 +151,21 @@ def check_psicologo_login(email, senha):
     finally:
         conn.close()
 
+def check_pedagogo_login(email, senha):
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    try:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM pedagogo WHERE Email = ? AND Senha = ?', (email, senha))
+        user = cursor.fetchone()
+        return user
+    except sqlite3.Error as e:
+        print(f"Erro ao verificar login: {e}")
+        return None
+    finally:
+        conn.close()
+
 def insert_event(title, start, end):
     conn = get_db_connection()
     if conn is None:
@@ -161,6 +195,23 @@ def insert_psicologo(email, senha):
         print("Psicólogo inserido com sucesso.")
     except sqlite3.Error as e:
         print(f"Erro ao inserir psicólogo: {e}")
+    finally:
+        conn.close()
+
+def insert_pedagogo(email, senha):
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO pedagogo (email, senha) 
+            VALUES (?, ?)
+        ''', (email, senha))
+        conn.commit()
+        print("Pedagogo inserido com sucesso.")
+    except sqlite3.Error as e:
+        print(f"Erro ao inserir pedagogo: {e}")
     finally:
         conn.close()
 
@@ -297,6 +348,7 @@ if __name__ == "__main__":
     criacao_tabela_anotacoes()
     criacao_tabela_psicologo()
     criacao_tabela_horarios()
+    criacao_tabela_pedagogo()
     test_psicologo()
     test_paciente()
 

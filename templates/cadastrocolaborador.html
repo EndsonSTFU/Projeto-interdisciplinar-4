@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscrição de Colaboradores</title>
+    <style>
+        body {
+            background-color: #ffff00; /* Amarelo de fundo */
+            color: #ff6600; /* Laranja para o texto */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            width: 150px;
+            height: 150px;
+            background-color: #ff6600; /* Laranja */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            padding: 20px; /* Adiciona um pequeno espaçamento interno */
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .label {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ff6600;
+        }
+
+        .button-container {
+    margin-top: 50px; /* Espaço acima do botão para separá-lo dos cards */
+    text-align: center; /* Garante que o botão fique centralizado */
+}
+
+.button-voltar {
+    padding: 8px 16px;
+    background-color: #ff6600;
+    color: #ff0000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    width: 30%;
+    margin: 0 auto; /* Garante que o botão fique centralizado */
+    display: block; /* Para garantir que o botão seja tratado como um bloco */
+}
+
+
+        .button-voltar:hover {
+            background-color: #ff4d00; /* Tom de laranja mais escuro */
+        }
+    </style>
+</head>
+<body>
+    <h1>FAÇA SUA INSCRIÇÃO COMO COLABORADOR!</h1>
+    <div class="container">
+        <div class="card-container">
+            <div class="card" onclick="window.location.href='/cadastro_psicologo'">
+                <img src="{{ url_for('static', filename='imagens/psicologo.png') }}" alt="Psicólogo">
+            </div>
+            <span class="label">SOU PSICÓLOGO(A)</span>
+        </div>
+        <div class="card-container">
+            <div class="card" onclick="window.location.href='/cadastro_enfermeira'">
+                <img src="{{ url_for('static', filename='imagens/equipe-medica.png') }}" alt="Enfermeiro">
+            </div>
+            <span class="label">SOU ENFERMEIRO(A)</span>
+        </div>
+        <div class="card-container">
+            <div class="card" onclick="window.location.href='/cadastro_pedagogo'">
+                <img src="{{ url_for('static', filename='imagens/doacao.png') }}" alt="Pedagogo">
+            </div>
+            <span class="label">SOU PEDAGOGO(A)</span>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button class="button-voltar" onclick="window.location.href='/login_psicologo'">Voltar</button>
+    </div>
+</body>
+</html>

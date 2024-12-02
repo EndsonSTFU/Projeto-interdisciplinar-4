@@ -158,11 +158,15 @@ def verificar_senha_psicologo():
         senha_acesso_correta = "atendiNAPS2024!"
         
         if senha_acesso == senha_acesso_correta:
-            return redirect(url_for('cadastro_psicologo'))
+            return redirect(url_for('cadastrocolaborador'))
         else:
             flash('Senha de acesso incorreta.', 'danger')
     
     return render_template('verificar_senha_psicologo.html')
+
+@app.route('/cadastrocolaborador')
+def cadastrocolaborador():
+    return render_template('cadastrocolaborador.html')
 
 @app.route('/cadastro_psicologo', methods=['GET', 'POST'])
 def cadastro_psicologo():
@@ -176,6 +180,19 @@ def cadastro_psicologo():
         flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('login_psicologo'))
     return render_template('cadastro_psicologo.html')
+
+@app.route('/cadastro_pedagogo', methods=['GET', 'POST'])
+def cadastro_pedagogo():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        if not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('cadastro_pedagogo.html')
+        sqlite.insert_pedagogo(email, senha) 
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect(url_for('login_psicologo'))
+    return render_template('cadastro_pedagogo.html')
 
 @app.route('/anotacao_paciente', methods=['GET', 'POST'])
 def anotacao_paciente():
