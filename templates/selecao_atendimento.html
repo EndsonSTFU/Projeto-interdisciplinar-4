@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Atendimento</title>
+    <style>
+        /* Fundo amarelo claro */
+        body {
+            background-color: #fafca1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Retângulo centralizado */
+        .retangulo {
+            background-color: #ffeb3b;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px; /* Ajuste a largura */
+        }
+
+        /* Título */
+        .titulo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #424242;
+            margin-bottom: 20px;
+        }
+
+        /* Botões cinza */
+        .botao {
+            background-color: #555;
+            color: white;
+            font-size: 18px;
+            padding: 15px 0; /* Remove o padding lateral para igualar o tamanho */
+            width: 100%; /* Faz com que todos os botões tenham a mesma largura */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-bottom: 10px; /* Espaçamento entre botões */
+        }
+
+        /* Efeitos ao passar o mouse */
+        .botao:hover {
+            background-color: #757575;
+            transform: scale(1.05);
+        }
+
+        /* Efeito ao clicar */
+        .botao:active {
+            transform: scale(0.95);
+        }
+    </style>
+    <script>
+        function redirecionarPaciente() {
+            window.location.href = "/telapaciente";
+        }
+    </script>
+</head>
+<body>
+    <div class="retangulo">
+        <div class="titulo">Selecione o tipo de atendimento</div>
+        <button class="botao" onclick="redirecionarPaciente()">Atendimento Psicológico</button>
+        <button class="botao">Atendimento de Enfermagem</button>
+        <button class="botao">Atendimento Pedagógico</button>
+    </div>
+</body>
+</html>

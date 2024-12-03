@@ -22,11 +22,12 @@ def login():
         user = check_login(email, senha)
         if user:
             session['user_id'] = user['ID_pacientes']
-            return redirect(url_for('telapaciente'))
+            return redirect(url_for('selecao_atendimento'))
         else:
             flash('Email ou senha inválidos', 'danger')
 
     return render_template('login.html')
+
 
 @app.route('/login_psicologo', methods=['GET', 'POST'])
 def login_psicologo():
@@ -46,6 +47,12 @@ def login_psicologo():
             flash('Email ou senha inválidos', 'danger')
 
     return render_template('login_psicologo.html')
+
+@app.route('/selecaoatedimento')
+def selecao_atendimento():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('selecao_atendimento.html')
 
 @app.route('/telapsicologo')
 def telapsicologo():

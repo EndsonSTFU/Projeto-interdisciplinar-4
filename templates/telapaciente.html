@@ -88,7 +88,7 @@
         <div class="dashboard-container">
             <h1>Bem-vindo!</h1>
             <div class="button-group">
-                <a href="{{ url_for('agendar_consulta') }}">Agendar Consulta</a>
+                <button onclick="location.href='/agendar_consulta'">Agendar Consulta</button>
                 <button onclick="location.href='verificar_horarios.html'">Verificar Horários</button>
                 <button onclick="location.href='desmarcar_consulta.html'">Desmarcar Consulta</button>
                 <form action="/logout" method="post">
