@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f6d1;
+            background-color: #f9faae;
             color: #333;
             display: flex;
             justify-content: center;
@@ -20,7 +20,7 @@
         }
 
         .container {
-            background-color: #f8ec83;
+            background-color: #fdec53;
             padding: 20px;
             border-radius: 10px;
             border: 2px solid #000;
@@ -77,7 +77,73 @@
         .back-button:hover {
             background-color: #555;
         }
-      
+
+        #eventFormContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            z-index: 1000;
+            border: 1px solid #ccc;
+        }
+
+        #eventFormContainer label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #eventFormContainer input[type="text"],
+        #eventFormContainer input[type="datetime-local"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #eventFormContainer input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #d4c600;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #eventFormContainer input[type="submit"]:hover {
+            background-color: #afa40d;
+        }
+
+        #eventFormContainer form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #eventFormContainer .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: #333;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            background: none;
+        }
+
+
         #eventModal {
             display: none;
             position: fixed;
@@ -87,7 +153,6 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0);
             background-color: rgba(0,0,0,0.4);
             padding-top: 60px;
         }
@@ -99,6 +164,7 @@
             border: 1px solid #888;
             width: 80%;
             max-width: 600px;
+            border-radius: 10px;
         }
 
         .close {
@@ -145,8 +211,15 @@
                 editable: true,
                 events: '/get_events',
                 select: function(info) {
+
+                    var existingForm = document.getElementById('eventFormContainer');
+                    if (existingForm) {
+                        document.body.removeChild(existingForm);
+                    }
+
                     var formHtml = `
                         <div id="eventFormContainer">
+                            <button class="close-btn">&times;</button>
                             <form id="eventForm">
                                 <label for="title">Título:</label>
                                 <input type="text" id="title" name="title" required><br>
@@ -161,6 +234,11 @@
                     var formContainer = document.createElement('div');
                     formContainer.innerHTML = formHtml;
                     document.body.appendChild(formContainer);
+
+
+                    document.querySelector('.close-btn').addEventListener('click', function() {
+                        document.body.removeChild(formContainer);
+                    });
 
                     document.getElementById('eventForm').addEventListener('submit', function(event) {
                         event.preventDefault();
@@ -201,16 +279,18 @@
                 }
             });
             calendar.render();
-            var modal = document.getElementById('eventModal');
-            var span = document.getElementsByClassName('close')[0];
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
+
+
+            document.querySelector('.close').onclick = function() {
+                document.getElementById('eventModal').style.display = "none";
+            };
+
+
             window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
+                if (event.target == document.getElementById('eventModal')) {
+                    document.getElementById('eventModal').style.display = "none";
                 }
-            }
+            };
         });
     </script>
 </body>

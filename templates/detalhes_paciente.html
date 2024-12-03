@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Paciente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafca1;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            margin-top: 40px;
+            background-color: #ffeb3b;
+            border-radius: 10px;
+            border: 2px solid #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .info, .notes {
+            margin-bottom: 20px;
+        }
+
+        .info p, .notes p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notes-table th, .notes-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .notes-table th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .notes-table td {
+            background-color: #f9f9f9;
+        }
+
+        .nav-buttons {
+            margin-top: 20px;
+        }
+
+        .nav-buttons a {
+            display: inline-block;
+            width: 150px;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .nav-buttons a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalhes do Paciente</h1>
+
+        <div class="info">
+            <p><strong>Nome:</strong> {{ paciente.nome }}</p>
+            <p><strong>Email:</strong> {{ paciente.email }}</p>
+            <p><strong>Data de Nascimento:</strong> {{ paciente.data_nascimento }}</p>
+            <p><strong>Matrícula:</strong> {{ paciente.matricula }}</p>
+        </div>
+
+        <div class="notes">
+            <h2>Anotações</h2>
+            <table class="notes-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Anotação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for anotacao in anotacoes %}
+                        <tr>
+                            <td>{{ paciente.nome }}</td>
+                            <td>{{ anotacao }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="{{ url_for('anotacoes_pacientes') }}">Voltar</a>
+            <a href="{{ url_for('salvar_anotacao', id=id) }}">Adicionar Anotação</a>
+        </div>        
+    </div>
+</body>
+</html>

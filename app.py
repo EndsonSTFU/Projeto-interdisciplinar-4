@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
+import sqlite
 import sqlite3
 
 app = Flask(__name__)
@@ -19,7 +20,7 @@ def login():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('login.html')
 
-        user = check_login(email, senha)
+        user = sqlite.check_login(email, senha)
         if user:
             session['user_id'] = user['ID_pacientes']
             return redirect(url_for('selecao_atendimento'))
@@ -28,6 +29,11 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/telapaciente')
+def telapaciente():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('telapaciente.html')
 
 @app.route('/login_psicologo', methods=['GET', 'POST'])
 def login_psicologo():
@@ -39,7 +45,7 @@ def login_psicologo():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('login_psicologo.html')
 
-        user = check_login_psicologo(email, senha)
+        user = sqlite.check_psicologo_login(email, senha)
         if user:
             session['user_id'] = user['ID_psicologo']
             return redirect(url_for('telapsicologo'))
@@ -60,12 +66,6 @@ def telapsicologo():
         return redirect(url_for('login_psicologo'))
     return render_template('telapsicologo.html')
 
-@app.route('/telapaciente')
-def telapaciente():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('telapaciente.html')
-
 @app.route('/agendar_consulta')
 def agendar_consulta():
     if 'user_id' not in session:
@@ -80,7 +80,59 @@ def agendar_consulta():
 
     return render_template('agendar_consulta.html', horarios=horarios)
 
-@app.route('/logout', methods=['POST'])
+@app.route('/anotacoes_pacientes', methods=['GET', 'POST'])
+def anotacoes_pacientes():
+    if 'user_id' not in session:
+        return redirect(url_for('login_psicologo'))
+
+    if request.method == 'POST':
+        paciente_id = request.form.get('paciente')
+        anotacao = request.form.get('anotacao')
+
+        if not paciente_id or not anotacao:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('anotacoes_pacientes.html', pacientes=sqlite.get_pacientes())
+
+        sqlite.save_anotacao(paciente_id, anotacao)
+        flash('Anotação salva com sucesso!', 'success')
+
+    return render_template('anotacoes_pacientes.html', pacientes=sqlite.get_pacientes())
+
+@app.route('/salvar_anotacao/<int:id>', methods=['GET', 'POST'])
+def salvar_anotacao(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_psicologo'))
+
+    paciente = sqlite.get_paciente(id)
+    if request.method == 'POST':
+        anotacao = request.form.get('anotacao')
+
+        if not anotacao:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('salvar_anotacao.html', paciente=paciente, id=id)
+
+        sqlite.save_anotacao(id, anotacao)
+        flash('Anotação salva com sucesso!', 'success')
+        return redirect(url_for('anotacoes_pacientes'))
+
+    return render_template('salvar_anotacao.html', paciente=paciente, id=id)
+
+@app.route('/detalhes_paciente/<int:id>', methods=['GET'])
+def detalhes_paciente(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_psicologo'))
+
+    paciente = sqlite.get_paciente(id)
+
+    if not paciente:
+        flash('Paciente não encontrado.', 'danger')
+        return redirect(url_for('telapsicologo'))
+
+    anotacoes = sqlite.get_paciente_anotacoes(id)
+    anotacoes = anotacoes['anotacoes']
+    return render_template('detalhes_paciente.html', paciente=paciente, anotacoes=anotacoes, id=id)
+
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
@@ -98,11 +150,29 @@ def cadastro():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('cadastro.html')
 
-        insert_paciente(nome, email, senha, data_nascimento, matricula) 
+        sqlite.insert_paciente(nome, email, senha, data_nascimento, matricula)
         flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('home'))
 
     return render_template('cadastro.html')
+
+@app.route('/verificar_senha_psicologo', methods=['GET', 'POST'])
+def verificar_senha_psicologo():
+    if request.method == 'POST':
+        senha_acesso = request.form.get('senha_acesso')
+        
+        senha_acesso_correta = "atendiNAPS2024!"
+        
+        if senha_acesso == senha_acesso_correta:
+            return redirect(url_for('cadastrocolaborador'))
+        else:
+            flash('Senha de acesso incorreta.', 'danger')
+    
+    return render_template('verificar_senha_psicologo.html')
+
+@app.route('/cadastrocolaborador')
+def cadastrocolaborador():
+    return render_template('cadastrocolaborador.html')
 
 @app.route('/cadastro_psicologo', methods=['GET', 'POST'])
 def cadastro_psicologo():
@@ -112,10 +182,23 @@ def cadastro_psicologo():
         if not email or not senha:
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('cadastro_psicologo.html')
-        insert_psicologo(email, senha) 
+        sqlite.insert_psicologo(email, senha) 
         flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('login_psicologo'))
     return render_template('cadastro_psicologo.html')
+
+@app.route('/cadastro_pedagogo', methods=['GET', 'POST'])
+def cadastro_pedagogo():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        if not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('cadastro_pedagogo.html')
+        sqlite.insert_pedagogo(email, senha) 
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect(url_for('login_psicologo'))
+    return render_template('cadastro_pedagogo.html')
 
 @app.route('/anotacao_paciente', methods=['GET', 'POST'])
 def anotacao_paciente():
@@ -127,7 +210,7 @@ def anotacao_paciente():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('anotacao_paciente.html')
 
-        insert_anotacao(nome_paciente, anotacao_paciente)
+        sqlite.insert_anotacao(nome_paciente, anotacao_paciente)
         return redirect(url_for('home'))
 
     return render_template('anotacao_paciente.html')
@@ -171,49 +254,6 @@ def add_event():
     conn.close()
     return jsonify({'status': 'success'})
 
-def check_login(email, senha):
-    conn = sqlite3.connect('banco_de_dados.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM pacientes WHERE Email = ? AND Senha = ?', (email, senha))
-    user = cursor.fetchone()
-    conn.close()
-    return user
-
-def check_login_psicologo(email, senha):
-    conn = sqlite3.connect('banco_de_dados.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM psicologo WHERE email = ? AND senha = ?', (email, senha))
-    user = cursor.fetchone()
-    conn.close()
-    return user
-
-def insert_paciente(nome, email, senha, data_nascimento, matricula):
-    conn = sqlite3.connect('banco_de_dados.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO pacientes (Nome, Email, Senha, Data_Nascimento, Matricula) 
-        VALUES (?, ?, ?, ?, ?)''', (nome, email, senha, data_nascimento, matricula))
-    conn.commit()
-    conn.close()
-
-def insert_psicologo(email, senha):
-    conn = sqlite3.connect('banco_de_dados.db')
-    cursor = conn.cursor()
-    cursor.execute('''INSERT INTO psicologo (email, senha)
-                   VALUES (?, ?)''', (email, senha))
-    conn.commit()
-    conn.close()
-
-def insert_anotacao(nome_paciente, anotacao_paciente):
-    conn = sqlite3.connect('banco_de_dados.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO anotacoes (Anotacoes) 
-        VALUES (?)''', (anotacao_paciente,))
-    conn.commit()
-    conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
