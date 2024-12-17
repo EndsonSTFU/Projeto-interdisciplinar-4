@@ -116,6 +116,7 @@
             color: #f44336;
             margin-top: 10px;
         }
+
     </style>
 </head>
 <body>
@@ -140,6 +141,13 @@
                     <a href="/login_psicologo" class="cadastro-botao psicologo-botao">Página do Colaborador</a>
                 </div>
                 <div class="erro" id="error-message"></div>
+                <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+                <df-messenger
+                    intent="WELCOME"
+                    chat-title="NAPSUABJ"
+                    agent-id="1597b31e-e39e-4c80-bfd5-062413e0adfc"
+                    language-code="pt-br">
+                </df-messenger>
             </form>
         </div>
     </div>
