@@ -343,12 +343,55 @@ def save_anotacao(paciente_id, anotacao):
     finally:
         conn.close()
 
+'''mudanças na tabela horários, para relacionar id do usuário em cada horário chamado  
+   e adicionando um booleano para verificar se o horário foi confirmado pelo psicólogo'''
+
+
+
+
+
+def alterar_tabela_horários():
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        cursor.execute('''
+            CREATE TABLE  IF NOT EXISTS horarios_novo (
+                ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                start TEXT NOT NULL,
+                end TEXT NOT NULL,
+                marcado INTEGER NOT NULL DEFAULT 0
+                Paciente INTEGER NOT NULL,
+                FOREIGN KEY (ID_paciente) REFERENCES paciente (ID_pacientes))''')
+        
+        cursor.execute('''INSERT INTO horarios_novo (ID, title, start, end)
+                       SELECT ID, title, start, end FROM horarios ''')
+        
+        cursor.execute("DROP TABLE horarios; ")
+
+        cursor. execute("ALTER TABLE horarios_novo RENAME TO horarios; ")
+
+        conn.commit()
+        print(f"Tabela 'horarios' alterada com sucesso.")
+    except sqlite3.Error as e:
+        print(f"Erro ao alterar a tabela 'horarios' : {e}")
+    finally:
+        conn.close()
+
+
+
 if __name__ == "__main__":
     criacao_tabela_paciente()
     criacao_tabela_anotacoes()
     criacao_tabela_psicologo()
     criacao_tabela_horarios()
     criacao_tabela_pedagogo()
+    alterar_tabela_horários()
     test_psicologo()
     test_paciente()
 
