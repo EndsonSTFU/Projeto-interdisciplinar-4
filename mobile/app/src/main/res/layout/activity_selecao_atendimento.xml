@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fafca1"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+        <!-- Logo img -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/your_logo" />
+
+        <!-- Container do retângulo -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="30dp"
+            android:background="#ffeb3b"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:elevation="4dp"
+            android:layout_gravity="center"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="10dp">
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selecione o tipo de atendimento"
+                android:textColor="#424242"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Botões de seleção -->
+            <Button
+                android:id="@+id/psychologyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atendimento Psicológico"
+                android:backgroundTint="#333"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/nursingButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atendimento de Enfermagem"
+                android:backgroundTint="#333"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/pedagogicButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atendimento Pedagógico"
+                android:backgroundTint="#333"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Voltar"
+                android:backgroundTint="#333"
+                android:textColor="#f0f0f5" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
