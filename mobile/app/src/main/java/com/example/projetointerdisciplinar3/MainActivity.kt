@@ -9,24 +9,47 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.projetointerdisciplinar3.activity.CadastroPacienteActivity
 import com.example.projetointerdisciplinar3.activity.DashboardPacienteActivity
 import com.example.projetointerdisciplinar3.activity.DashboardColaboradorActivity
+import com.example.projetointerdisciplinar3.database.DatabaseInitializer
+import com.example.projetointerdisciplinar3.factory.AnotacaoViewModelFactory
+import com.example.projetointerdisciplinar3.factory.HorarioViewModelFactory
 import com.example.projetointerdisciplinar3.factory.UsuarioViewModelFactory
 import com.example.projetointerdisciplinar3.model.Tipo
+import com.example.projetointerdisciplinar3.service.AnotacaoViewModel
+import com.example.projetointerdisciplinar3.service.HorarioViewModel
 import com.example.projetointerdisciplinar3.service.UsuarioViewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var usuarioViewModel: UsuarioViewModel
+    private lateinit var anotacaoViewModel: AnotacaoViewModel
+    private lateinit var horarioViewModel: HorarioViewModel
+
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        lifecycleScope.launch {
+            val dbInitializer = DatabaseInitializer(this@MainActivity)
+            dbInitializer.populateDatabase()
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        sessionManager = SessionManager(this)
+
+        if (sessionManager.isLoggedIn()) {
+            navigateToDashboard()
+            return
         }
 
         val emailInput = findViewById<EditText>(R.id.emailInput)
@@ -35,9 +58,13 @@ class MainActivity : AppCompatActivity() {
         val registerButton = findViewById<Button>(R.id.registerButton)
         val errorMessage = findViewById<TextView>(R.id.errorMessage)
 
-        val usuarioDao = AppDatabase.getInstance(applicationContext).usuarioDa()
-        val factory = UsuarioViewModelFactory(usuarioDao)
-        usuarioViewModel = ViewModelProvider(this, factory).get(UsuarioViewModel::class.java)
+        val usuarioDao = AppDatabase.getInstance(applicationContext).usuarioDao()
+        val horarioDao = AppDatabase.getInstance(applicationContext).horarioDao()
+        val anotacaoDao = AppDatabase.getInstance(applicationContext).anotacaoDao()
+
+        usuarioViewModel = ViewModelProvider(this, UsuarioViewModelFactory(usuarioDao))[UsuarioViewModel::class.java]
+        horarioViewModel = ViewModelProvider(this, HorarioViewModelFactory(horarioDao))[HorarioViewModel::class.java]
+        anotacaoViewModel = ViewModelProvider(this, AnotacaoViewModelFactory(anotacaoDao))[AnotacaoViewModel::class.java]
 
         loginButton.setOnClickListener {
             val email = emailInput.text.toString()
@@ -49,27 +76,37 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            usuarioViewModel.autenticarUsuario(email, password) { usuario ->
+            lifecycleScope.launch {
+                val usuario = usuarioViewModel.autenticarUsuario(email, password)
                 if (usuario != null) {
                     errorMessage.visibility = TextView.GONE
+                    sessionManager.saveUserSession(
+                        usuario.id,
+                        usuario.email,
+                        usuario.tipo.toString(),
+                        usuario.matricula
+                    )
 
-                    when (usuario.tipo) {
-                        Tipo.PACIENTE -> {
-                            startActivity(Intent(this, DashboardPacienteActivity::class.java))
-                        } else -> {
-                            startActivity(Intent(this, DashboardColaboradorActivity::class.java))
-                        }
-                    }
-                    finish()
+                    navigateToDashboard()
                 } else {
                     errorMessage.text = "Credenciais inválidas"
                     errorMessage.visibility = TextView.VISIBLE
                 }
             }
         }
-
         registerButton.setOnClickListener {
             startActivity(Intent(this, CadastroPacienteActivity::class.java))
         }
+    }
+
+    private fun navigateToDashboard() {
+        val userType = sessionManager.getUserTipo()
+        val dashboardIntent = if (userType?.let { Tipo.valueOf(it.uppercase()) } == Tipo.PACIENTE) {
+            Intent(this, DashboardPacienteActivity::class.java)
+        } else {
+            Intent(this, DashboardColaboradorActivity::class.java)
+        }
+        startActivity(dashboardIntent)
+        finish()
     }
 }

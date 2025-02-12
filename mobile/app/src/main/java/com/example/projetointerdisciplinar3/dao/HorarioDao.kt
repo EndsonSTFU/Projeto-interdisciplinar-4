@@ -12,6 +12,9 @@ interface HorarioDao {
     @Insert
     suspend fun insert(horario: Horario)
 
+    @Query("DELETE FROM horarios")
+    suspend fun clearAllHorarios()
+
     @Update
     suspend fun update(horario: Horario)
 
@@ -29,6 +32,9 @@ interface HorarioDao {
 
     @Query("SELECT * FROM horarios")
     suspend fun getAll(): List<Horario>
+
+    @Query("SELECT * FROM horarios WHERE pacienteId IS NULL")
+    suspend fun getWithoutPaciente(): List<Horario>
 
     @Query("DELETE FROM horarios WHERE id = :id")
     suspend fun deleteById(id: Int)

@@ -14,6 +14,9 @@ interface UsuarioDao {
     @Insert
     suspend fun inserirUsuario(usuario: Usuario)
 
+    @Query("DELETE FROM usuarios")
+    suspend fun clearAllUsuarios()
+
     @Update
     suspend fun atualizarUsuario(usuario: Usuario)
 

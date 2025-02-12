@@ -10,6 +10,6 @@ data class Horario(
     val title: String,
     val start: String,
     val end: String,
-    val pacienteId: Int,
+    var pacienteId: Int? = null,
     val colaboradorId: Int
 )

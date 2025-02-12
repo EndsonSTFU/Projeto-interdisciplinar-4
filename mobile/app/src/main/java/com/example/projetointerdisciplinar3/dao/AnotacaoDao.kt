@@ -13,6 +13,9 @@ interface AnotacaoDao {
     @Insert
     suspend fun inserirAnotacao(anotacao: Anotacao)
 
+    @Query("DELETE FROM anotacoes")
+    suspend fun clearAllAnotacoes()
+
     @Update
     suspend fun atualizarAnotacao(anotacao: Anotacao)
 

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import com.example.projetointerdisciplinar3.MainActivity
 import com.example.projetointerdisciplinar3.R
+import com.example.projetointerdisciplinar3.SessionManager
 
 class DashboardPacienteActivity : AppCompatActivity() {
 
@@ -14,10 +15,13 @@ class DashboardPacienteActivity : AppCompatActivity() {
     private lateinit var viewOtherAppointmentsButton: Button
     private lateinit var cancelAppointmentButton: Button
     private lateinit var logoutButton: Button
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard_paciente)
+
+        sessionManager = SessionManager(this)
 
         requestAppointmentButton = findViewById(R.id.requestAppointmentButton)
         viewOtherAppointmentsButton = findViewById(R.id.viewOtherAppointmentsButton)
@@ -25,7 +29,7 @@ class DashboardPacienteActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logoutButton)
 
         requestAppointmentButton.setOnClickListener {
-            val intent = Intent(this, DashboardPacienteActivity::class.java)
+            val intent = Intent(this, AgendarHorarioActivity::class.java)
             startActivity(intent)
         }
 
@@ -40,6 +44,7 @@ class DashboardPacienteActivity : AppCompatActivity() {
         }
 
         logoutButton.setOnClickListener {
+            sessionManager.logoutUser()
             Toast.makeText(this, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
             finish()
             startActivity(Intent(this, MainActivity::class.java))

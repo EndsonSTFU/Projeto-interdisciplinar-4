@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.example.projetointerdisciplinar3"
-    compileSdk = 35
+    compileSdk = 35 // Updated to match AGP 8.7.2 compatibility
 
     defaultConfig {
         applicationId = "com.example.projetointerdisciplinar3"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 35 // Updated to match AGP 8.7.2 compatibility
         versionCode = 1
         versionName = "1.0"
 
@@ -51,12 +51,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Dependências do Room
+    // Room dependencies
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 
-    // Dependências do ViewModel e LiveData
+    // ViewModel and LiveData dependencies
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 }

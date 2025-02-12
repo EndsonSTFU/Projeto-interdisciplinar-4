@@ -11,9 +11,9 @@ import com.example.projetointerdisciplinar3.model.Anotacao
 import com.example.projetointerdisciplinar3.model.Horario
 import com.example.projetointerdisciplinar3.model.Usuario
 
-@Database(entities = [Usuario::class, Horario::class, Anotacao::class], version = 1)
+@Database(entities = [Usuario::class, Horario::class, Anotacao::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun usuarioDa(): UsuarioDao
+    abstract fun usuarioDao(): UsuarioDao
     abstract fun horarioDao(): HorarioDao
     abstract fun anotacaoDao(): AnotacaoDao
 
