@@ -15,5 +15,8 @@ adicionalmente eu criei um requirements.txt que filtra sempre para termos contro
 para instalar as versões podemos usar o comando:
 
 pip install -r requirements.txt
+
+pip install flask pymongo (instalei a nova biblioteca para usar mongoDB com python, ainda está em testes, mas já passei tudo)
+
 =======
 >>>>>>> 7a963580531f4730819175fb12116f251e786879
