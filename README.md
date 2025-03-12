@@ -20,3 +20,6 @@ pip install flask pymongo (instalei a nova biblioteca para usar mongoDB com pyth
 
 =======
 >>>>>>> 7a963580531f4730819175fb12116f251e786879
+
+jordao125 y3jcym4CfZMTBOyg "username and password for the database"
+
