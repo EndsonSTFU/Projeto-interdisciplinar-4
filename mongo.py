@@ -11,6 +11,8 @@ db = client["plataforma_agendamento"]
 pacientes_collection = db["pacientes"]
 psicologos_collection = db["psicologos"]
 horarios_collection = db["horarios"]
+enfermeira_collection = db["enfermeira"]
+pedagogo_collection = db["pedagogo"]
 
 
 # 🔹 Classe Login Paciente
@@ -50,22 +52,25 @@ class Paciente:
 
 # 🔹 Classe Psicólogo
 class Psicologo:
-    def __init__(self, nome, email, especialidade):
-        self.nome = nome
-        self.email = email
-        self.especialidade = especialidade
+    def __init__(self, nome_psicologo, email_psicologo, senha_psicologo, especialidade_psicologo):
+        self.nome_psicologo = nome_psicologo
+        self.email_psicologo = email_psicologo
+        self.senha_psicologo = senha_psicologo
+        self.especialidade_psicologo = especialidade_psicologo
+        
 
     def salvar(self):
         psicologo_id = psicologos_collection.insert_one({
-            "Nome": self.nome,
-            "Email": self.email,
-            "Especialidade": self.especialidade
+            "Nome": self.nome_psicologo,
+            "Email": self.email_psicologo,
+            "senha": self.senha_psicologo,
+            "Especialidade": self.especialidade_psicologo
         }).inserted_id
         return str(psicologo_id)
 
     @staticmethod
-    def buscar_por_email(email):
-        return psicologos_collection.find_one({"Email": email})
+    def buscar_por_email(email_psicologo):
+        return psicologos_collection.find_one({"Email_psicologo": email_psicologo})
 
 
 # 🔹 Classe Horário
@@ -88,6 +93,48 @@ class Horario:
     @staticmethod
     def listar_horarios():
         return list(horarios_collection.find({}, {"_id": 0}))
+    
+# 🔹 Classe Enfermeira
+
+class Enfermeira:
+    def __init__(self, nome_enfermeira,enfermeira_email, senha_enfermeira, especialidade_enfermeira):
+        self.nome_enfermeira = nome_enfermeira
+        self.enfemeira_email = enfermeira_email
+        self.senha_enfermeira = senha_enfermeira
+        self.especialidade_enfermeira = especialidade_enfermeira
+    
+    def salvar(self):
+        Enfermeira_id = enfermeira_collection.insert_one({
+            "Nome": self.nome_enfermeira,
+            "Email": self.enfemeira_email,
+            "senha": self.senha_enfermeira,
+            "Especialidade": self.especialidade_enfermeira 
+        }).inserted_id
+        return str(Enfermeira_id)
+    @staticmethod
+    def buscar_por_email(email):
+        return enfermeira_collection.find_one({"Email_enfermeira": email})
+    
+# 🔹 Classe Pedagogo(a)
+class Pedagogo:
+    def __init__(self, nome,pedagogo_email, senha, especialidade):
+        self.nome = nome
+        self.pedagogo_email = pedagogo_email
+        self.senha = senha
+        self.especialidade = especialidade
+    
+    def salvar(self):
+        pedagogo_id = pedagogo_collection.insert_one({
+            "Nome": self.nome,
+            "Email": self.pedagogo_email,
+            "senha": self.senha,
+            "Especialidade": self.especialidade 
+        }).inserted_id
+        return str(pedagogo_id)
+    
+    @staticmethod
+    def buscar_por_email(email):
+        return pedagogo_collection.find_one({"Email": email})
 
 
 # 🔹 Testando a conexão com o banco de dados
@@ -109,9 +156,19 @@ if __name__ == "__main__":
     print(f"Paciente criado com ID: {paciente_id}")
 
     # Criando um psicólogo
-    psicologo1 = Psicologo("Dra. Ana", "ana@psicologa.com", "Terapia Cognitiva")
+    psicologo1 = Psicologo("Dra. Ana", "ana@psicologa.com", "123456", "Terapia Cognitiva")
     psicologo_id = psicologo1.salvar()
     print(f"Psicólogo criado com ID: {psicologo_id}")
+
+    # Criando um pedagogo
+    pedagogo1 = Pedagogo("Dra. Ana", "ana@ppedagogo.com", "123456", "orientacao")
+    pedagogo_id = pedagogo1.salvar()
+    print(f"Pedagogo criado com ID: {pedagogo_id}")
+
+    # Criando um enfermeiro
+    enfermeira1 = Enfermeira("Dra. Ana", "ana@enfermeira.com", "123456", "cuidados medicos")
+    enfermeira_id = enfermeira1.salvar()
+    print(f"Enfermeira criado com ID: {enfermeira_id}")
 
     # Criando um horário de atendimento
     horario1 = Horario("ana@psicologa.com", "joao@email.com", "2025-03-15T10:00:00", "2025-03-15T11:00:00")
@@ -119,5 +176,5 @@ if __name__ == "__main__":
     print(f"Horário criado com ID: {horario_id}")
 
     # Listando horários agendados
-    print("Lista de horários agendados:")
+    print(f"Lista de horários agendados:")
     print(Horario.listar_horarios())
