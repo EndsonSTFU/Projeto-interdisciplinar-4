@@ -90,8 +90,9 @@
         <thead>
             <tr>
                 <th>Título</th>
+                <th>Psicólogo(a)</th> <!-- Nova coluna -->
                 <th>Início</th>
-                <th>Fim</th>
+                <th>Término</th>
                 <th>Ação</th>
             </tr>
         </thead>
@@ -99,6 +100,7 @@
             {% for horario in horarios %}
             <tr>
                 <td>{{ horario.title }}</td>
+                <td>{{ horario.psicologo_nome }}</td> <!-- Exibe o nome da psicóloga -->
                 <td>{{ horario.start }}</td>
                 <td>{{ horario.end }}</td>
                 <td>

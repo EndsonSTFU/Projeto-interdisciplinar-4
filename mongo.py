@@ -3,8 +3,6 @@ from bson import ObjectId
 from werkzeug.security import generate_password_hash
 
 
-# aqui jean
-
 # Conexão com MongoDB
 client = MongoClient("mongodb+srv://jordao125:y3jcym4CfZMTBOyg@naps.ucftl.mongodb.net/")
 db = client["plataforma_agendamento"]
@@ -31,7 +29,7 @@ class Paciente:
         return str(paciente_id)
     
     def inserir_paciente(self, nome, email, senha, data_nascimento, matricula):
-        if self.collection.find_one({"Email": email}):
+        if pacientes_collection.find_one({"Email": email}):
             return {"status": "error", "message": "Email já cadastrado"}
 
         senha_hash = generate_password_hash(senha)  # Criptografando a senha
@@ -42,7 +40,7 @@ class Paciente:
             "DataNascimento": data_nascimento,
             "Matricula": matricula
         }
-        self.collection.insert_one(paciente)
+        pacientes_collection.insert_one(paciente)
         return {"status": "success", "message": "Cadastro realizado com sucesso!"}
 
     @staticmethod
@@ -90,9 +88,16 @@ class Horario:
     @staticmethod
     def listar_horarios():
         return list(horarios_collection.find({}, {"_id": 0}))
-    
 
 
+# 🔹 Testando a conexão com o banco de dados
+if __name__ == "__main__":
+    print("Testando conexão com o banco de dados...")
+    try:
+        # Listando as coleções do banco de dados
+        print("Coleções no banco de dados:", db.list_collection_names())
+    except Exception as e:
+        print("Erro ao conectar ao MongoDB Atlas:", e)
 
 # 🔹 Criando dados iniciais
 if __name__ == "__main__":

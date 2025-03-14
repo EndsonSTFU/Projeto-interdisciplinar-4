@@ -143,7 +143,6 @@
             background: none;
         }
 
-
         #eventModal {
             display: none;
             position: fixed;
@@ -198,6 +197,7 @@
             <p><strong>Título:</strong> <span id="modalTitle"></span></p>
             <p><strong>Início:</strong> <span id="modalStart"></span></p>
             <p><strong>Fim:</strong> <span id="modalEnd"></span></p>
+            <p><strong>Psicólogo(a):</strong> <span id="modalPsicologo"></span></p>
         </div>
     </div>
 
@@ -211,16 +211,19 @@
                 editable: true,
                 events: '/get_events',
                 select: function(info) {
-
                     var existingForm = document.getElementById('eventFormContainer');
                     if (existingForm) {
                         document.body.removeChild(existingForm);
                     }
+                    var psicologoNome = "{{ session.get('psicologo_nome', 'Psicólogo Desconhecido') }}";
 
                     var formHtml = `
                         <div id="eventFormContainer">
                             <button class="close-btn">&times;</button>
                             <form id="eventForm">
+                                <div style="margin-bottom: 15px;">
+                                    <strong>Psicólogo(a):</strong> ${psicologoNome}
+                                </div>
                                 <label for="title">Título:</label>
                                 <input type="text" id="title" name="title" required><br>
                                 <label for="start">Início:</label>
@@ -234,7 +237,6 @@
                     var formContainer = document.createElement('div');
                     formContainer.innerHTML = formHtml;
                     document.body.appendChild(formContainer);
-
 
                     document.querySelector('.close-btn').addEventListener('click', function() {
                         document.body.removeChild(formContainer);
@@ -255,13 +257,17 @@
                                 body: JSON.stringify({
                                     title: title,
                                     start: start,
-                                    end: end
+                                    end: end,
+                                    psicologo_nome: psicologoNome
                                 })
                             }).then(response => response.json()).then(data => {
                                 calendar.addEvent({
                                     title: title,
                                     start: start,
-                                    end: end
+                                    end: end,
+                                    extendedProps: {
+                                        psicologo_nome: psicologoNome
+                                    }
                                 });
                                 document.body.removeChild(formContainer);
                             });
@@ -275,16 +281,15 @@
                     document.getElementById('modalTitle').textContent = info.event.title;
                     document.getElementById('modalStart').textContent = start.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                     document.getElementById('modalEnd').textContent = end ? end.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'Não definido';
+                    document.getElementById('modalPsicologo').textContent = info.event.extendedProps.psicologo_nome || 'Psicólogo Desconhecido';
                     document.getElementById('eventModal').style.display = "block";
                 }
             });
             calendar.render();
 
-
             document.querySelector('.close').onclick = function() {
                 document.getElementById('eventModal').style.display = "none";
             };
-
 
             window.onclick = function(event) {
                 if (event.target == document.getElementById('eventModal')) {

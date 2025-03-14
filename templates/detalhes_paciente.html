@@ -89,10 +89,10 @@
         <h1>Detalhes do Paciente</h1>
 
         <div class="info">
-            <p><strong>Nome:</strong> {{ paciente.nome }}</p>
-            <p><strong>Email:</strong> {{ paciente.email }}</p>
-            <p><strong>Data de Nascimento:</strong> {{ paciente.data_nascimento }}</p>
-            <p><strong>Matrícula:</strong> {{ paciente.matricula }}</p>
+            <p><strong>Nome:</strong> {{ paciente.Nome }}</p> <!-- Acessa o campo "Nome" -->
+            <p><strong>Email:</strong> {{ paciente.Email }}</p> <!-- Acessa o campo "Email" -->
+            <p><strong>Data de Nascimento:</strong> {{ paciente.DataNascimento }}</p> <!-- Acessa o campo "DataNascimento" -->
+            <p><strong>Matrícula:</strong> {{ paciente.Matricula }}</p> <!-- Acessa o campo "Matricula" -->
         </div>
 
         <div class="notes">
@@ -100,15 +100,15 @@
             <table class="notes-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Psicóloga</th> <!-- Nova coluna para o nome da psicóloga -->
                         <th>Anotação</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for anotacao in anotacoes %}
                         <tr>
-                            <td>{{ paciente.nome }}</td>
-                            <td>{{ anotacao }}</td>
+                            <td>{{ anotacao.psicologo_nome }}</td> <!-- Exibe o nome da psicóloga -->
+                            <td>{{ anotacao.anotacao }}</td> <!-- Exibe a anotação -->
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -117,7 +117,7 @@
 
         <div class="nav-buttons">
             <a href="{{ url_for('anotacoes_pacientes') }}">Voltar</a>
-            <a href="{{ url_for('salvar_anotacao', id=id) }}">Adicionar Anotação</a>
+            <a href="{{ url_for('salvar_anotacao', id=paciente._id) }}">Adicionar Anotação</a>
         </div>        
     </div>
 </body>

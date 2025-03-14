@@ -128,6 +128,7 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
         .logo {
             margin-bottom: 20px;
             text-align: center;
@@ -145,6 +146,17 @@
         </div>
         <h1>Anotações dos Pacientes</h1>
         <h2>Pacientes</h2>
+
+        <!-- Exibe mensagens flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Tabela de pacientes -->
         <table>
             <thead>
                 <tr>
@@ -155,12 +167,16 @@
             <tbody>
                 {% for paciente in pacientes %}
                 <tr>
-                    <td>{{ paciente.nome }}</td>
-                    <td><a href="/detalhes_paciente/{{ paciente.ID }}" class="button">Ver Detalhes</a></td>
+                    <td>{{ paciente.Nome }}</td> <!-- Acessa o campo "Nome" -->
+                    <td>
+                        <a href="/detalhes_paciente/{{ paciente._id }}" class="button">Ver Detalhes</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- Botões de navegação -->
         <div class="button-group">
             <a href="{{ url_for('telapsicologo') }}" class="button">Voltar</a>
         </div>

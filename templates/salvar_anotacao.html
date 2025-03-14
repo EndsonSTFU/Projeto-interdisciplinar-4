@@ -44,16 +44,18 @@
             color: #333;
         }
 
-        input[type="text"],
+        .paciente-info {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
-        }
-
-        textarea {
             height: 150px;
             resize: vertical;
         }
@@ -73,7 +75,7 @@
             background-color: #555;
         }
 
-        .button{
+        .button {
             width: 97%;
             padding: 10px;
             background-color: #333;
@@ -123,6 +125,7 @@
     <div class="form-container">
         <h1>Salvar Anotação</h1>
 
+        <!-- Exibe mensagens flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -133,11 +136,12 @@
             {% endif %}
         {% endwith %}
         
+        <div class="paciente-info">
+            <strong>Paciente:</strong> {{ paciente.Nome }}
+        </div>
+
+
         <form action="{{ url_for('salvar_anotacao', id=id) }}" method="post">
-            <div class="form-group">
-                <label for="paciente">Paciente:</label>
-                <input type="text" id="paciente" name="paciente" value="{{ paciente.nome }}" readonly>
-            </div>
             <div class="form-group">
                 <label for="anotacao">Anotação:</label>
                 <textarea id="anotacao" name="anotacao" required></textarea>
