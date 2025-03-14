@@ -2,8 +2,11 @@ from pymongo import MongoClient
 from bson import ObjectId
 from werkzeug.security import generate_password_hash
 
+
+# aqui jean
+
 # Conexão com MongoDB
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://jordao125:y3jcym4CfZMTBOyg@naps.ucftl.mongodb.net/")
 db = client["plataforma_agendamento"]
 
 # Coleções
@@ -17,9 +20,7 @@ class Paciente:
     def __init__(self, nome, email, senha):
         self.nome = nome
         self.email = email
-        self.senha = generate_password_hash(senha)  # Senha segura com hash
-
-    
+        self.senha = generate_password_hash(senha)  # Senha segura com hash    
 
     def salvar(self):
         paciente_id = pacientes_collection.insert_one({
@@ -89,6 +90,8 @@ class Horario:
     @staticmethod
     def listar_horarios():
         return list(horarios_collection.find({}, {"_id": 0}))
+    
+
 
 
 # 🔹 Criando dados iniciais
