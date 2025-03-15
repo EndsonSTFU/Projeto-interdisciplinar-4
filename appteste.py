@@ -4,32 +4,29 @@ from pymongo import MongoClient
 from werkzeug.security import check_password_hash, generate_password_hash
 import certifi
 from bson import ObjectId
+from bson import ObjectId
+from bson.errors import InvalidId
 
 app = Flask(__name__)
 app.secret_key = 'atendimento_psicologico_personalizado'
 
-# Conexão com MongoDB
-client = MongoClient(
-    "mongodb+srv://jordao125:y3jcym4CfZMTBOyg@naps.ucftl.mongodb.net/",
-    tls=True,
-    tlsCAFile=certifi.where()
-)
+client = MongoClient("mongodb+srv://jordao125:y3jcym4CfZMTBOyg@naps.ucftl.mongodb.net/",tls=True,tlsCAFile=certifi.where())
 db = client["plataforma_agendamento"]
 
-# Coleções
 pacientes_col = db["pacientes"]
 psicologos_col = db["psicologos"]
 horarios_col = db["horarios"]
 anotacoes_col = db["anotacoes"]
+mensagens_col = db["mensagens_bot"]
+pedagogos_col = db["pedagogo"]
+enfermeiro_col = db["enfermeira"]
 
-# Função para verificar login do paciente
 def check_login(email, senha):
     user = pacientes_col.find_one({"Email": email})
     if user and check_password_hash(user["Senha"], senha):
         return user
     return None
 
-# Função para verificar login do psicólogo
 def check_psicologo_login(email, senha):
     user = psicologos_col.find_one({"Email": email})
     if user and check_password_hash(user["Senha"], senha):
@@ -65,31 +62,31 @@ def telapaciente():
         return redirect(url_for('login'))
     return render_template('telapaciente.html')
 
-@app.route('/login_psicologo', methods=['GET', 'POST'])
-def login_psicologo():
+@app.route('/login_colaborador', methods=['GET', 'POST'])
+def login_colaborador():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
 
         if not email or not senha:
             flash('Todos os campos são obrigatórios.', 'danger')
-            return render_template('login_psicologo.html')
+            return render_template('login_colaborador.html')
 
         user = psicologos_col.find_one({"Email": email})
         if user and check_password_hash(user["Senha"], senha):
             session['user_id'] = str(user["_id"])
-            session['psicologo_nome'] = user["Nome"]  # Armazena o nome na sessão
+            session['psicologo_nome'] = user["Nome"]
             return redirect(url_for('telapsicologo'))
         else:
             flash('Email ou senha inválidos', 'danger')
 
-    return render_template('login_psicologo.html')
+    return render_template('login_colaborador.html')
 
 
 @app.route('/telapsicologo')
 def telapsicologo():
     if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
+        return redirect(url_for('login_colaborador'))
     return render_template('telapsicologo.html')
 
 @app.route('/agendar_consulta')
@@ -100,11 +97,22 @@ def agendar_consulta():
     horarios = list(horarios_col.find({}, {"_id": 0}))
     return render_template('agendar_consulta.html', horarios=horarios)
 
+@app.route('/verificadesabafo')
+def verificadesabafo():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        mensagens = list(mensagens_col.find({}, {"_id": 0}))
+        return render_template('verificadesabafo.html', mensagens=mensagens)
+    except Exception as e:
+        return f"Erro ao acessar o banco de dados: {e}", 500
+
+    
 @app.route('/anotacoes_pacientes', methods=['GET', 'POST'])
 def anotacoes_pacientes():
     if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
-
+        return redirect(url_for('login_colaborador'))
 
     pacientes = list(pacientes_col.find({}, {"_id": 1, "Nome": 1})) 
 
@@ -116,11 +124,10 @@ def anotacoes_pacientes():
             flash('Todos os campos são obrigatórios.', 'danger')
             return render_template('anotacoes_pacientes.html', pacientes=pacientes)
 
-        # Salva a anotação no banco de dados
         anotacoes_col.insert_one({
             "paciente_id": paciente_id,
             "anotacao": anotacao,
-            "psicologo_nome": session.get('psicologo_nome', 'Psicólogo Desconhecido')  # Adiciona o nome da psicóloga
+            "psicologo_nome": session.get('psicologo_nome', 'Psicólogo Desconhecido')
         })
         flash('Anotação salva com sucesso!', 'success')
 
@@ -129,16 +136,15 @@ def anotacoes_pacientes():
 @app.route('/salvar_anotacao/<string:id>', methods=['GET', 'POST'])
 def salvar_anotacao(id):
     if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
+        return redirect(url_for('login_colaborador'))
 
     try:
-        # Converte o ID do paciente para ObjectId
+
         paciente_id = ObjectId(id)
     except:
         flash('ID do paciente inválido.', 'danger')
         return redirect(url_for('anotacoes_pacientes'))
 
-    # Busca o paciente no banco de dados
     paciente = pacientes_col.find_one({"_id": paciente_id})
     if not paciente:
         flash('Paciente não encontrado.', 'danger')
@@ -151,11 +157,10 @@ def salvar_anotacao(id):
             flash('A anotação não pode estar vazia.', 'danger')
             return render_template('salvar_anotacao.html', paciente=paciente, id=id)
 
-        # Salva a anotação no banco de dados
         anotacoes_col.insert_one({
-            "paciente_id": str(paciente_id),  # Salva o ID do paciente como string
+            "paciente_id": str(paciente_id), 
             "anotacao": anotacao,
-            "psicologo_nome": session.get('psicologo_nome', 'Psicólogo Desconhecido')  # Adiciona o nome da psicóloga
+            "psicologo_nome": session.get('psicologo_nome', 'Psicólogo Desconhecido')
         })
         flash('Anotação salva com sucesso!', 'success')
         return redirect(url_for('detalhes_paciente', paciente_id=str(paciente_id)))
@@ -165,7 +170,7 @@ def salvar_anotacao(id):
 @app.route('/detalhes_paciente/<string:paciente_id>', methods=['GET'])
 def detalhes_paciente(paciente_id):
     if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
+        return redirect(url_for('login_colaborador'))
 
     try:
         paciente_id = ObjectId(paciente_id)
@@ -178,7 +183,6 @@ def detalhes_paciente(paciente_id):
         flash('Paciente não encontrado.', 'danger')
         return redirect(url_for('anotacoes_pacientes'))
 
-    # Busca as anotações do paciente
     anotacoes = list(anotacoes_col.find({"paciente_id": str(paciente_id)}, {"_id": 0}))
 
     return render_template('detalhes_paciente.html', paciente=paciente, anotacoes=anotacoes, id=str(paciente_id))
@@ -261,13 +265,70 @@ def cadastro_psicologo():
         }
         psicologos_col.insert_one(psicologo)
         flash('Cadastro realizado com sucesso!', 'success')
-        return redirect(url_for('login_psicologo'))
+        return redirect(url_for('login_colaborador'))
     return render_template('cadastro_psicologo.html')
+
+@app.route('/cadastro_pedagogo', methods=['GET', 'POST'])
+def cadastro_pedagogo():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        especialidade = request.form.get('especialidade')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+
+        if not nome or not especialidade or not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('cadastro_pedagogo.html')
+
+        if pedagogos_col.find_one({"Email": email}):
+            flash('Email já cadastrado.', 'danger')
+            return render_template('cadastro_pedagogo.html')
+
+        senha_hash = generate_password_hash(senha)
+        pedagogo = {
+            "Nome": nome,
+            "Especialidade": especialidade,
+            "Email": email,
+            "Senha": senha_hash
+        }
+        pedagogos_col.insert_one(pedagogo)
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect(url_for('login_colaborador'))
+    return render_template('cadastro_pedagogo.html')
+
+@app.route('/cadastro_enfermeira', methods=['GET', 'POST'])
+def cadastro_enfermeira():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        especialidade = request.form.get('especialidade')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+
+        if not nome or not especialidade or not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'danger')
+            return render_template('cadastro_enfermeira.html')
+
+        if enfermeiro_col.find_one({"Email": email}):
+            flash('Email já cadastrado.', 'danger')
+            return render_template('cadastro_enfermeira.html')
+
+        senha_hash = generate_password_hash(senha)
+        enfermeira = {
+            "Nome": nome,
+            "Especialidade": especialidade,
+            "Email": email,
+            "Senha": senha_hash
+        }
+        enfermeiro_col.insert_one(enfermeira)
+
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect(url_for('login_colaborador'))
+    return render_template('cadastro_enfermeira.html')
 
 @app.route('/cadastrarhorario')
 def cadastrarhorario():
     if 'user_id' not in session:
-        return redirect(url_for('login_psicologo'))
+        return redirect(url_for('login_colaborador'))
     return render_template('cadastrarhorario.html')
 
 
@@ -301,7 +362,6 @@ def add_event():
     })
 
     return jsonify({"status": "success"})
-
 
 
 if __name__ == '__main__':

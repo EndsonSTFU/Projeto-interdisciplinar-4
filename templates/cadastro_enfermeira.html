@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Colaborador</title>
+    <title>Cadastro - Enfermeira</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,21 +17,7 @@
             height: 100vh;
             overflow: hidden;
         }
-
-        .login-wrapper {
-            text-align: center;
-        }
-
-        .logo {
-            margin-bottom: 20px;
-        }
-
-        .logo img {
-            max-width: 70%;
-            height: auto;
-        }
-
-        .login-container {
+        .form-container {
             background-color: #ffeb3b;
             padding: 20px;
             border-radius: 10px;
@@ -39,34 +25,28 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
-            display: inline-block;
-            position: relative;
+            box-sizing: border-box;
+            margin: 20px auto;
         }
-
         h1 {
             margin-top: 0;
             color: #333;
         }
-
         .form-group {
             margin-bottom: 15px;
         }
-
         label {
             display: block;
             margin-bottom: 5px;
             color: #333;
         }
-
-        input[type="email"],
-        input[type="password"] {
+        input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
         }
-
         button {
             width: 100%;
             padding: 10px;
@@ -78,46 +58,49 @@
             font-size: 16px;
             margin-bottom: 10px;
         }
-
         button:hover {
             background-color: #555;
         }
-
-        .cadastro-container {
-            margin-top: 15px;
-        }
-
-        .cadastro-botao {
-            width: 100%;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 15px;
-            margin-bottom: 15px;
-            text-decoration: none;
-        }
         .voltar-botao {
-            width: 100%;
+            width: auto;
             padding: 10px;
-            background-color: #cc0000;
+            background-color: #e00000;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-bottom: 10px;
             text-decoration: none;
+            display: block;
+            margin-top: 10px;
         }
-        .cadastro-botao:hover {
-            background-color: #0056b3;
+        .voltar-botao:hover {
+            background-color: #610202;
+        }
+        .flash-message {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-message.danger {
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
-        .error {
-            color: #f44336;
-            margin-top: 10px;
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 70%;
+            height: auto;
+        }
+        .login-wrapper {
+            text-align: center;
         }
     </style>
 </head>
@@ -126,9 +109,25 @@
         <div class="logo">
             <img src="../static/imagens/thumbnailsite (1).png" alt="Logo">
         </div>
-        <div class="login-container">
-            <h1>Login do Colaborador</h1>
-            <form action="/login_psicologo" method="post">
+        <div class="form-container">
+            <h1>Cadastro Enfermeira</h1>
+            <!-- Exibe mensagens flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="post">
+                <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+                  </div>
+                <div class="form-group">
+                 <label for="especialidade">Especialidade:</label>
+                 <input type="text" id="especialidade" name="especialidade" required>
+                </div>
                 <div class="form-group">
                     <label for="email">E-mail:</label>
                     <input type="email" id="email" name="email" required>
@@ -137,12 +136,8 @@
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" required>
                 </div>
-                <button type="submit">Entrar</button>
-                <div class="cadastro-container">
-                    <a href="/verificar_senha_psicologo" class="cadastro-botao">Cadastre-se</a>
-                    <a href="/login" class="voltar-botao">Voltar</a>
-                </div>
-                <div class="error" id="error-message"></div>
+                <button type="submit">Cadastrar</button>
+                <a href="/login_colaborador" class="voltar-botao">Voltar</a>
             </form>
         </div>
     </div>

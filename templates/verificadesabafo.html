@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anotações dos Pacientes - Psicólogo</title>
+    <title>Mensagens de Desabafo - AtendiNAPS</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,7 +32,7 @@
             overflow-y: auto;
         }
 
-        .container h1, .container h2 {
+        .container h1 {
             margin-top: 0;
             color: #333;
         }
@@ -59,39 +59,21 @@
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 10px; 
+            gap: 10px;
             margin-top: 20px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
+        .mensagem {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
             border: 1px solid #ddd;
+            margin-bottom: 10px;
             text-align: left;
         }
 
-        th {
-            background-color: #f4f4f4;
-        }
-
-        .flash-message {
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-            width: 90%;
-            margin-bottom: 10px;
-        }
-
-        .flash-message.danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .mensagem strong {
+            color: #555;
         }
 
         .logo {
@@ -102,13 +84,6 @@
         .logo img {
             max-width: 70%;
         }
-
-        .tabela-container {
-            max-height: 50vh; 
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
     </style>
 </head>
 <body>
@@ -116,37 +91,20 @@
         <div class="logo">
             <img src="{{ url_for('static', filename='imagens/thumbnailsite (1).png') }}" alt="Logo">
         </div>
-        <h1>Anotações dos Pacientes</h1>
-        <h2>Pacientes</h2>
+        <h1>Mensagens de Desabafo</h1>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message {{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="tabela-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Detalhes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for paciente in pacientes %}
-                    <tr>
-                        <td>{{ paciente.Nome }}</td>
-                        <td>
-                            <a href="/detalhes_paciente/{{ paciente._id }}" class="button">Ver Detalhes</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% if mensagens %}
+            {% for mensagem in mensagens %}
+                <div class="mensagem">
+                    <strong>Usuário ID:</strong> {{ mensagem.usuario_id }}<br>
+                    <strong>Nome:</strong> {{ mensagem.nome }}<br>
+                    <strong>Mensagem:</strong> {{ mensagem.mensagem }}<br>
+                    <strong>Data:</strong> {{ mensagem.data }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhuma mensagem de desabafo encontrada.</p>
+        {% endif %}
 
         <div class="button-group">
             <a href="{{ url_for('telapsicologo') }}" class="button">Voltar</a>

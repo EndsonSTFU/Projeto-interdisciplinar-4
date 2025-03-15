@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from bson import ObjectId
 from werkzeug.security import generate_password_hash
-
+from datetime import datetime
 
 # Conexão com MongoDB
 client = MongoClient("mongodb+srv://jordao125:y3jcym4CfZMTBOyg@naps.ucftl.mongodb.net/")
@@ -13,14 +13,31 @@ psicologos_collection = db["psicologos"]
 horarios_collection = db["horarios"]
 enfermeira_collection = db["enfermeira"]
 pedagogo_collection = db["pedagogo"]
+mensagens_collection = db["mensagens_bot"]
 
+class MensagemBot:
+    def __init__(self, usuario_id, nome, mensagem):
+        self.usuario_id = usuario_id
+        self.nome = nome
+        self.mensagem = mensagem
+        self.data = datetime.now()
+
+    def salvar(self):
+        mensagem_data = {
+            "usuario_id": self.usuario_id,
+            "nome": self.nome,
+            "mensagem": self.mensagem,
+            "data": self.data
+        }
+        mensagens_collection.insert_one(mensagem_data)
+        return True
 
 # 🔹 Classe Login Paciente
 class Paciente:
     def __init__(self, nome, email, senha):
         self.nome = nome
         self.email = email
-        self.senha = generate_password_hash(senha)  # Senha segura com hash    
+        self.senha = generate_password_hash(senha)  # Senha segura com hash
 
     def salvar(self):
         paciente_id = pacientes_collection.insert_one({
@@ -29,7 +46,7 @@ class Paciente:
             "Senha": self.senha
         }).inserted_id
         return str(paciente_id)
-    
+
     def inserir_paciente(self, nome, email, senha, data_nascimento, matricula):
         if pacientes_collection.find_one({"Email": email}):
             return {"status": "error", "message": "Email já cadastrado"}
@@ -48,7 +65,6 @@ class Paciente:
     @staticmethod
     def buscar_por_email(email):
         return pacientes_collection.find_one({"Email": email})
-  
 
 # 🔹 Classe Psicólogo
 class Psicologo:
@@ -57,7 +73,6 @@ class Psicologo:
         self.email_psicologo = email_psicologo
         self.senha_psicologo = senha_psicologo
         self.especialidade_psicologo = especialidade_psicologo
-        
 
     def salvar(self):
         psicologo_id = psicologos_collection.insert_one({
@@ -71,7 +86,6 @@ class Psicologo:
     @staticmethod
     def buscar_por_email(email_psicologo):
         return psicologos_collection.find_one({"Email_psicologo": email_psicologo})
-
 
 # 🔹 Classe Horário
 class Horario:
@@ -93,49 +107,48 @@ class Horario:
     @staticmethod
     def listar_horarios():
         return list(horarios_collection.find({}, {"_id": 0}))
-    
-# 🔹 Classe Enfermeira
 
+# 🔹 Classe Enfermeira
 class Enfermeira:
-    def __init__(self, nome_enfermeira,enfermeira_email, senha_enfermeira, especialidade_enfermeira):
+    def __init__(self, nome_enfermeira, enfermeira_email, senha_enfermeira, especialidade_enfermeira):
         self.nome_enfermeira = nome_enfermeira
-        self.enfemeira_email = enfermeira_email
+        self.enfermeira_email = enfermeira_email
         self.senha_enfermeira = senha_enfermeira
         self.especialidade_enfermeira = especialidade_enfermeira
-    
+
     def salvar(self):
-        Enfermeira_id = enfermeira_collection.insert_one({
+        enfermeira_id = enfermeira_collection.insert_one({
             "Nome": self.nome_enfermeira,
-            "Email": self.enfemeira_email,
+            "Email": self.enfermeira_email,
             "senha": self.senha_enfermeira,
-            "Especialidade": self.especialidade_enfermeira 
+            "Especialidade": self.especialidade_enfermeira
         }).inserted_id
-        return str(Enfermeira_id)
+        return str(enfermeira_id)
+
     @staticmethod
     def buscar_por_email(email):
         return enfermeira_collection.find_one({"Email_enfermeira": email})
-    
+
 # 🔹 Classe Pedagogo(a)
 class Pedagogo:
-    def __init__(self, nome,pedagogo_email, senha, especialidade):
+    def __init__(self, nome, pedagogo_email, senha, especialidade):
         self.nome = nome
         self.pedagogo_email = pedagogo_email
         self.senha = senha
         self.especialidade = especialidade
-    
+
     def salvar(self):
         pedagogo_id = pedagogo_collection.insert_one({
             "Nome": self.nome,
             "Email": self.pedagogo_email,
             "senha": self.senha,
-            "Especialidade": self.especialidade 
+            "Especialidade": self.especialidade
         }).inserted_id
         return str(pedagogo_id)
-    
+
     @staticmethod
     def buscar_por_email(email):
         return pedagogo_collection.find_one({"Email": email})
-
 
 # 🔹 Testando a conexão com o banco de dados
 if __name__ == "__main__":
@@ -178,3 +191,12 @@ if __name__ == "__main__":
     # Listando horários agendados
     print(f"Lista de horários agendados:")
     print(Horario.listar_horarios())
+    
+    # Inserindo uma mensagem de teste
+    mensagens_collection.insert_one({
+        "usuario_id": 123456,
+        "nome": "Teste",
+        "mensagem": "Esta é uma mensagem de teste.",
+        "data": datetime.now()
+    })
+    print("Documento de teste inserido na coleção mensagens_bot.")

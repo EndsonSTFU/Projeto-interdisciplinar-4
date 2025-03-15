@@ -89,10 +89,10 @@
         <h1>Detalhes do Paciente</h1>
 
         <div class="info">
-            <p><strong>Nome:</strong> {{ paciente.Nome }}</p> <!-- Acessa o campo "Nome" -->
-            <p><strong>Email:</strong> {{ paciente.Email }}</p> <!-- Acessa o campo "Email" -->
-            <p><strong>Data de Nascimento:</strong> {{ paciente.DataNascimento }}</p> <!-- Acessa o campo "DataNascimento" -->
-            <p><strong>Matrícula:</strong> {{ paciente.Matricula }}</p> <!-- Acessa o campo "Matricula" -->
+            <p><strong>Nome:</strong> {{ paciente.Nome }}</p>
+            <p><strong>Email:</strong> {{ paciente.Email }}</p>
+            <p><strong>Data de Nascimento:</strong> {{ paciente.DataNascimento }}</p>
+            <p><strong>Matrícula:</strong> {{ paciente.Matricula }}</p>
         </div>
 
         <div class="notes">
@@ -100,15 +100,15 @@
             <table class="notes-table">
                 <thead>
                     <tr>
-                        <th>Psicóloga</th> <!-- Nova coluna para o nome da psicóloga -->
+                        <th>Psicólogo(a)</th>
                         <th>Anotação</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for anotacao in anotacoes %}
                         <tr>
-                            <td>{{ anotacao.psicologo_nome }}</td> <!-- Exibe o nome da psicóloga -->
-                            <td>{{ anotacao.anotacao }}</td> <!-- Exibe a anotação -->
+                            <td>{{ anotacao.psicologo_nome }}</td>
+                            <td>{{ anotacao.anotacao }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
