@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamentos - Psicólogo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafca1;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 20px;
+            margin: 20px auto;
+            background-color: #ffeb3b;
+            border-radius: 10px;
+            border: 2px solid #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .container h1, .container h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .button {
+            width: 97%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: #555;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .flash-message {
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            width: 90%;
+            margin-bottom: 10px;
+        }
+
+        .flash-message.danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            max-width: 70%;
+        }
+
+        .tabela-container {
+            max-height: 50vh; 
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='imagens/thumbnailsite (1).png') }}" alt="Logo">
+        </div>
+        <h1>Agendamentos dos Pacientes</h1>
+        <h2>Detalhes dos Pacientes e Horários</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Paciente</th>
+                        <th>Horário Agendado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paciente in pacientes %}
+                    <tr>
+                        <td>{{ paciente.Nome }}</td>
+                        <td>{{ paciente.agendamento }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="button-group">
+            <a href="{{ url_for('telapsicologo') }}" class="button">Voltar</a>
+        </div>
+    </div>
+</body>
+</html>

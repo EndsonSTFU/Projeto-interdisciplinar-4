@@ -337,6 +337,17 @@ def get_events():
     eventos = list(horarios_col.find({}, {"_id": 0}))
     return jsonify(eventos)
 
+@app.route('/agendamentos_pacientes')
+def agendamentos_pacientes():
+    if 'user_id' not in session:
+        return redirect(url_for('login_colaborador'))
+    
+    # Buscar consultas agendadas no banco de dados
+    agendamentos = list(horarios_col.find({}, {"_id": 1, "paciente_nome": 1, "horario": 1}))
+
+    return render_template('agendamentos_pacientes.html', agendamentos=agendamentos)
+
+
 @app.route('/add_event', methods=['POST'])
 def add_event():
     if 'user_id' not in session:
@@ -365,4 +376,4 @@ def add_event():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
