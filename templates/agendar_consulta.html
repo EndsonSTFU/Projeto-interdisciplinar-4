@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horários de Atendimento</title>
+    <title>Agendar Consulta</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -63,13 +63,14 @@
             text-decoration: none;
             margin-top: 10px;
             cursor: pointer;
+            border: none;
         }
 
         .btn:hover {
             background-color: #eff15d;
         }
 
-        .btn.disabled {
+        .btn:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
@@ -85,86 +86,65 @@
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="logo">
-        <img src="../static/imagens/thumbnailsite (1).png" alt="Logo">
+    <div class="container">
+        <div class="logo">
+            <img src="../static/imagens/thumbnailsite (1).png" alt="Logo">
+        </div>
+        <h1>Agendar Consulta</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Psicólogo(a)</th>
+                    <th>Início</th>
+                    <th>Término</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for horario in horarios %}
+                <tr>
+                    <td>{{ horario.title }}</td>
+                    <td>{{ horario.psicologo_nome }}</td>
+                    <td>{{ horario.start }}</td>
+                    <td>{{ horario.end }}</td>
+                    <td>
+                        {% if horario.paciente_id %}
+                            <button class="btn" disabled>Reservado</button>
+                        {% else %}
+                            <button class="btn" onclick="agendarHorario('{{ horario.start }}')">Agendar</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/telapaciente" class="btn">Voltar</a>
     </div>
-    <h1>Horários de Atendimento</h1>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Psicólogo(a)</th>
-                <th>Início</th>
-                <th>Término</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for horario in horarios %}
-            <tr>
-                <td>{{ horario.title }}</td>
-                <td>{{ horario.psicologo_nome }}</td>
-                <td>{{ horario.start }}</td>
-                <td>{{ horario.end }}</td>
-                <td>
-                    <button class="btn agendar-btn" data-horario-id="{{ horario._id }}" data-psicologo-nome="{{ horario.psicologo_nome }}">
-                        Agendar
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    <a href="/telapaciente" class="btn">Voltar</a>
-</div>
-
-<script>
-    // Adiciona um evento de clique para todos os botões "Agendar"
-    document.querySelectorAll('.agendar-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const horarioId = this.getAttribute('data-horario-id');
-            const psicologoNome = this.getAttribute('data-psicologo-nome');
-
-            // Depuração: exibe os dados capturados no console
-            console.log("Dados capturados:", {
-                horario_id: horarioId,
-                psicologo_nome: psicologoNome
-            });
-
-            // Envia uma requisição POST para o servidor
-            fetch('/solicitar_agendamento', {
+    <script>
+        function agendarHorario(horario) {
+            fetch('/agendar_horario', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    horario_id: horarioId,
-                    psicologo_nome: psicologoNome
-                }),
+                body: JSON.stringify({ horario: horario })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    alert('Solicitação de agendamento enviada com sucesso!');
-                    // Desabilita o botão após o agendamento
-                    this.disabled = true;
-                    this.classList.add('disabled');
-                    this.textContent = 'Solicitado';
+                    alert('Horário agendado com sucesso!');
+                    location.reload();
                 } else {
-                    alert(data.message || 'Erro ao enviar solicitação.');
+                    alert(data.message);
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao enviar solicitação.');
+                alert('Ocorreu um erro ao tentar agendar o horário.');
             });
-        });
-    });
-</script>
-
+        }
+    </script>
 </body>
 </html>
