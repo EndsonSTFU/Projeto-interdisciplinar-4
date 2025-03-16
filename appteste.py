@@ -97,6 +97,36 @@ def agendar_consulta():
     horarios = list(horarios_col.find({}, {"_id": 0}))
     return render_template('agendar_consulta.html', horarios=horarios)
 
+@app.route('/agendar_horario', methods=['POST'])
+def agendar_horario():
+    if 'user_id' not in session:
+        return jsonify({"status": "error", "message": "Usuário não autenticado"}), 401
+
+    data = request.get_json()
+    horario = data.get('horario')  # O horário que o paciente está tentando agendar
+
+    if not horario:
+        return jsonify({"status": "error", "message": "Horário não fornecido"}), 400
+
+    # Verifica se o horário já está agendado
+    horario_existente = horarios_col.find_one({"start": horario, "paciente_id": {"$ne": None}})
+    if horario_existente:
+        return jsonify({"status": "error", "message": "Desculpe, horário já reservado"}), 400
+
+    # Busca o paciente no banco de dados
+    paciente_id = session['user_id']
+    paciente = pacientes_col.find_one({"_id": ObjectId(paciente_id)})
+
+    if not paciente:
+        return jsonify({"status": "error", "message": "Paciente não encontrado"}), 404
+
+    # Atualiza o horário com o ID e nome do paciente
+    horarios_col.update_one(
+        {"start": horario},
+        {"$set": {"paciente_id": paciente_id, "paciente_nome": paciente["Nome"]}}
+    )
+
+    return jsonify({"status": "success"})
 @app.route('/verificadesabafo')
 def verificadesabafo():
     if 'user_id' not in session:

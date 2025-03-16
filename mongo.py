@@ -149,7 +149,11 @@ class Pedagogo:
     @staticmethod
     def buscar_por_email(email):
         return pedagogo_collection.find_one({"Email": email})
-
+    
+horarios_collection.update_many(
+    {},  # Filtro vazio para aplicar a todos os documentos
+    {"$set": {"paciente_id": None, "paciente_nome": None}}  # Adiciona os novos campos
+)
 # 🔹 Testando a conexão com o banco de dados
 if __name__ == "__main__":
     print("Testando conexão com o banco de dados...")
@@ -192,11 +196,5 @@ if __name__ == "__main__":
     print(f"Lista de horários agendados:")
     print(Horario.listar_horarios())
     
-    # Inserindo uma mensagem de teste
-    mensagens_collection.insert_one({
-        "usuario_id": 123456,
-        "nome": "Teste",
-        "mensagem": "Esta é uma mensagem de teste.",
-        "data": datetime.now()
-    })
+    
     print("Documento de teste inserido na coleção mensagens_bot.")
