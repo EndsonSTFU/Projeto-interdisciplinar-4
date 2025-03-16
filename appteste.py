@@ -371,12 +371,14 @@ def get_events():
 def agendamentos_pacientes():
     if 'user_id' not in session:
         return redirect(url_for('login_colaborador'))
-    
-    # Buscar consultas agendadas no banco de dados
-    agendamentos = list(horarios_col.find({}, {"_id": 1, "paciente_nome": 1, "horario": 1}))
 
-    return render_template('agendamentos_pacientes.html', agendamentos=agendamentos)
+    # Buscar apenas os agendamentos com paciente associado
+    agendamentos = list(horarios_col.find(
+        {"paciente_nome": {"$exists": True, "$ne": ""}},  # Filtra agendamentos com paciente_nome
+        {"_id": 0, "psicologo_nome": 1, "paciente_nome": 1, "start": 1, "end": 1}  # Campos a serem buscados
+    ))
 
+    return render_template('agendamentos_pacientes.html', horarios=agendamentos)
 
 @app.route('/add_event', methods=['POST'])
 def add_event():
